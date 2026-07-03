@@ -6,46 +6,76 @@
     <title>管理员管理 · 控制台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --bg-main: #f8fafc;
+            --panel-bg: rgba(255, 255, 255, 0.8);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --status-active-bg: #f0fdf4;
+            --status-active-text: #166534;
+            --status-active-dot: #22c55e;
+            
+            --status-inactive-bg: #fef2f2;
+            --status-inactive-text: #991b1b;
+            --status-inactive-dot: #ef4444;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background: #f4f7fc;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* --- Header Navigation Bar --- */
         .app-bar {
-            background: rgba(18, 28, 46, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
             color: white;
-            padding: 1rem 2.5rem;
+            padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 8px 24px rgba(0, 20, 40, 0.12);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .app-bar h1 {
             font-weight: 600;
-            font-size: 1.6rem;
-            letter-spacing: -0.3px;
+            font-size: 1.35rem;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .app-bar h1 i {
             color: #fbbf24;
-            font-size: 1.8rem;
+            font-size: 1.45rem;
+            filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.2));
         }
 
         .app-bar div {
@@ -54,45 +84,48 @@
             align-items: center;
         }
 
+        /* --- Global Buttons --- */
         .btn-secondary, .btn-danger {
-            padding: 0.5rem 1.2rem;
-            border-radius: 60px;
+            padding: 0.5rem 1.1rem;
+            border-radius: 12px;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.12);
-            color: #f0f4ff;
-            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.05);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.22);
-            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .btn-danger {
-            background: rgba(239, 68, 68, 0.18);
+            background: rgba(239, 68, 68, 0.15);
             color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.1);
         }
 
         .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.35);
-            color: #fff;
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
         }
 
+        /* --- Layout Main Elements --- */
         .viewport-container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 2rem auto;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             width: 100%;
             flex: 1;
         }
@@ -100,70 +133,63 @@
         .admin-controls {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
 
         .btn-primary {
-            background: #1e3a6b;
+            background: var(--accent-primary);
             color: white;
-            padding: 0.7rem 1.8rem;
-            border-radius: 60px;
-            font-weight: 600;
+            padding: 0.65rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
             border: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            box-shadow: 0 6px 14px rgba(26, 67, 113, 0.25);
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-primary i {
-            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-primary:hover {
-            background: #14315a;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(18, 52, 97, 0.3);
+            background: var(--accent-hover);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
         }
 
+        /* --- Modern Data Table Rendering --- */
         .table-wrapper {
             background: white;
-            border-radius: 28px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 20, 40, 0.06);
-            overflow-x: auto;
-            padding: 0.25rem;
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm), var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-            min-width: 760px;
+            font-size: 0.9rem;
+            min-width: 900px;
+            text-align: left;
         }
 
         th {
-            text-align: left;
-            padding: 1.2rem 1rem 0.9rem 1.5rem;
+            padding: 1rem 1.5rem;
             font-weight: 600;
-            color: #1f2a44;
-            letter-spacing: 0.02em;
-            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-size: 0.775rem;
             text-transform: uppercase;
-            opacity: 0.7;
-            border-bottom: 1px solid #eef2f6;
+            letter-spacing: 0.05em;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
         }
 
         td {
-            padding: 1rem 1rem 1rem 1.5rem;
-            border-bottom: 1px solid #f0f4fa;
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
-            color: #1a2639;
+            color: var(--text-primary);
         }
 
         tr:last-child td {
@@ -171,125 +197,134 @@
         }
 
         tr:hover td {
-            background: #f8faff;
+            background: #f8fafc;
         }
 
         td strong {
             font-weight: 600;
-            color: #0b1a33;
+            color: var(--text-primary);
         }
 
+        /* --- Decorative Badges & Indicators --- */
         .badge {
-            display: inline-block;
-            padding: 0.25rem 0.9rem;
-            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
-            letter-spacing: 0.01em;
-            background: #eef2f6;
-            color: #1f2a44;
         }
 
         .badge-super {
-            background: #dbeafe;
-            color: #1e3a8a;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
         }
 
         .badge-admin {
-            background: #e5e7eb;
-            color: #374151;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
         }
 
         .badge-plan {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 600;
+            display: inline-flex;
+            padding: 0.2rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.725rem;
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        .badge-demo { background: #dbeafe; color: #1e3a8a; }
-        .badge-starter { background: #d1fae5; color: #065f46; }
-        .badge-pro { background: #fef3c7; color: #92400e; }
-        .badge-enterprise { background: #ede9fe; color: #5b21b6; }
+        .badge-demo { background: #f1f5f9; color: #475569; }
+        .badge-starter { background: #ecfdf5; color: #065f46; }
+        .badge-pro { background: #fffbeb; color: #92400e; }
+        .badge-enterprise { background: #f5f3ff; color: #5b21b6; }
 
         .status-indicator {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 0.2rem 0.9rem 0.2rem 0.7rem;
-            border-radius: 40px;
+            padding: 0.2rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
         }
 
         .status-indicator::before {
-            content: "●";
-            font-size: 0.6rem;
-            margin-right: 2px;
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
         }
 
         .status-indicator.active {
-            background: #dcfce7;
-            color: #166534;
+            background: var(--status-active-bg);
+            color: var(--status-active-text);
         }
 
         .status-indicator.active::before {
-            color: #22c55e;
+            background: var(--status-active-dot);
         }
 
         .status-indicator.inactive {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--status-inactive-bg);
+            color: var(--status-inactive-text);
         }
 
         .status-indicator.inactive::before {
-            color: #ef4444;
+            background: var(--status-inactive-dot);
         }
 
+        /* --- Row Inline Actions Buttons --- */
         .btn-edit, .btn-delete {
             border: none;
             background: transparent;
             font-size: 0.8rem;
             font-weight: 500;
-            padding: 0.3rem 0.8rem;
-            border-radius: 40px;
-            transition: all 0.15s;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.15s ease;
             cursor: pointer;
-            margin: 0 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .btn-edit {
-            color: #2563eb;
+            color: var(--accent-primary);
             background: #eff6ff;
         }
 
         .btn-edit:hover {
             background: #dbeafe;
-            color: #1e40af;
+            color: var(--accent-hover);
         }
 
         .btn-delete {
-            color: #b91c1c;
-            background: #fee2e2;
+            color: #dc2626;
+            background: #fef2f2;
         }
 
         .btn-delete:hover {
-            background: #fecaca;
-            color: #7f1d1d;
+            background: #fee2e2;
+            color: #991b1b;
         }
 
+        /* --- Modern Overlay Window Structures --- */
         .modal {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 10, 30, 0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 999;
+            z-index: 1000;
             padding: 1.5rem;
+            animation: fadeIn 0.2s ease-out;
         }
 
         .modal.active {
@@ -297,138 +332,168 @@
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 40px;
+            background: #ffffff;
+            border-radius: 20px;
             max-width: 600px;
             width: 100%;
-            padding: 2.2rem 2.5rem;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: 0.2s;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
 
         .modal-content h2 {
             font-weight: 600;
-            font-size: 1.8rem;
-            color: #0b1a33;
-            margin-bottom: 1.8rem;
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .close {
-            float: right;
-            font-size: 2rem;
-            font-weight: 300;
-            line-height: 1;
-            color: #4b5563;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.25rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: 0.2s;
-            margin-top: -0.4rem;
+            transition: color 0.15s;
+            line-height: 1;
         }
 
         .close:hover {
-            color: #111827;
-            transform: rotate(90deg);
+            color: var(--text-primary);
         }
 
         form label {
             font-weight: 500;
-            font-size: 0.85rem;
-            color: #1f2a44;
+            font-size: 0.825rem;
+            color: var(--text-secondary);
             display: block;
-            margin: 1rem 0 0.3rem 0;
+            margin: 1rem 0 0.4rem 0;
+        }
+
+        form label i {
+            margin-right: 4px;
+            color: var(--text-muted);
+            width: 14px;
+            text-align: center;
         }
 
         form input, form select {
             width: 100%;
-            padding: 0.7rem 1rem;
-            border: 1px solid #d1d9e6;
-            border-radius: 18px;
-            font-size: 0.95rem;
-            background: white;
-            transition: 0.2s;
+            padding: 0.6rem 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            transition: all 0.2s;
             outline: none;
+            color: var(--text-primary);
         }
 
         form input:focus, form select:focus {
-            border-color: #1e3a6b;
-            box-shadow: 0 0 0 4px rgba(30, 58, 107, 0.12);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
+        /* --- Dynamic Feature Visualization Layouts --- */
         .plan-details {
-            background: #f8fafd;
-            padding: 1rem;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            margin: 0.5rem 0 0 0;
+            background: #f8fafc;
+            padding: 1.1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 0.75rem;
         }
 
         .plan-details h4 {
-            margin: 0 0 0.5rem 0;
-            color: #0b1a33;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
-        .plan-details ul {
-            margin: 0;
-            padding-left: 1.2rem;
+        #adminPlanFeatures, #planLimitsDisplay {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            list-style: none;
+            padding-left: 0 !important;
+        }
+
+        #planLimitsDisplay {
+            margin-top: 0.75rem !important;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
         }
 
         .plan-details ul li {
-            font-size: 0.85rem;
-            color: #4b5563;
-            padding: 0.1rem 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
+        /* --- Group Checklist Elements --- */
         #groupCheckboxes {
-            background: #f8fafd;
-            border-radius: 20px;
-            padding: 1rem 1.2rem;
-            margin: 0.4rem 0 0.8rem 0;
-            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 0.75rem;
+            margin-top: 0.4rem;
+            border: 1px solid var(--border-color);
             max-height: 160px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         #groupCheckboxes div {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            transition: background 0.1s;
+        }
+
+        #groupCheckboxes div:hover {
+            background: #f8fafc;
         }
 
         #groupCheckboxes input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #1e3a6b;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-primary);
             margin: 0;
+            cursor: pointer;
         }
 
         #groupCheckboxes label {
             margin: 0;
             font-weight: 400;
-            font-size: 0.9rem;
-            color: #1f2a44;
+            font-size: 0.875rem;
+            color: var(--text-primary);
             cursor: pointer;
+            width: 100%;
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
+            padding: 4rem 2rem !important;
+            color: var(--text-muted);
         }
 
         .empty-state i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             display: block;
             margin-bottom: 1rem;
+            color: var(--border-color);
         }
 
         .actions {
@@ -439,67 +504,76 @@
         }
 
         .actions .btn-secondary-action {
-            background: #eef2f6;
-            color: #1f2a44;
+            background: #f1f5f9;
+            color: var(--text-secondary);
             border: none;
-            padding: 0.6rem 1.8rem;
-            border-radius: 60px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 12px;
             font-weight: 500;
             cursor: pointer;
-            transition: 0.15s;
+            transition: background 0.15s;
         }
 
         .actions .btn-secondary-action:hover {
-            background: #dce2ec;
+            background: #e2e8f0;
+            color: var(--text-primary);
         }
 
         .actions .btn-primary {
-            padding: 0.6rem 2rem;
+            padding: 0.6rem 1.75rem;
         }
 
         .form-hint {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.75rem;
-            margin-top: 0.25rem;
+            margin-top: 0.35rem;
             display: block;
         }
 
+        /* --- Scrollbar Performance Modernization --- */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #eef2f6;
-            border-radius: 20px;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #bac8d9;
-            border-radius: 20px;
+            background: #cbd5e1;
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #9aadc4;
+            background: #94a3b8;
         }
 
-        @media (max-width: 650px) {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- Adaptive Breakpoint Controls --- */
+        @media (max-width: 768px) {
             .app-bar {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 16px;
                 padding: 1rem 1.5rem;
             }
             .viewport-container {
                 padding: 0 1rem;
-                margin: 1rem auto;
+                margin: 1.5rem auto;
             }
             .modal-content {
-                padding: 1.8rem;
-                margin: 0.5rem;
+                padding: 1.5rem;
             }
             th, td {
-                padding: 0.7rem 0.5rem;
+                padding: 0.85rem 1rem;
+            }
+            #adminPlanFeatures, #planLimitsDisplay {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             }
         }
     </style>
@@ -559,7 +633,7 @@
                                     <% if(admin._id.toString() !== adminData.id) { %>
                                         <button onclick="deleteAdmin('<%= admin._id %>')" class="btn-delete"><i class="fas fa-trash-alt"></i> 删除</button>
                                     <% } else { %>
-                                        <span style="font-size:0.7rem; color:#94a3b8;">当前账号</span>
+                                        <span style="font-size:0.75rem; color:#94a3b8; margin-left: 6px;">当前账号</span>
                                     <% } %>
                                 </td>
                             </tr>
@@ -568,7 +642,7 @@
                         <tr>
                             <td colspan="8" class="empty-state">
                                 <i class="fas fa-users"></i>
-                                暂无管理员，点击 <a href="#" onclick="showCreateForm(); return false;" style="color: #2563eb;">创建管理员</a> 添加第一个管理员
+                                暂无管理员，点击 <a href="#" onclick="showCreateForm(); return false;" style="color: #2563eb; text-decoration: none; font-weight: 500;">创建管理员</a> 添加第一个管理员
                             </td>
                         </tr>
                     <% } %>
@@ -577,11 +651,10 @@
         </div>
     </main>
 
-    <!-- Modal -->
     <div id="adminModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2><i class="fas fa-user-cog" style="color:#1e3a6b;"></i> <span id="modalTitle">创建管理员</span></h2>
+            <span class="close" onclick="closeModal()"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-user-cog" style="color:#2563eb;"></i> <span id="modalTitle">创建管理员</span></h2>
             <form id="adminForm">
                 <input type="hidden" id="adminId" name="id">
                 
@@ -616,7 +689,7 @@
 
                 <div class="plan-details" id="adminPlanDetails">
                     <h4>📊 方案功能</h4>
-                    <ul id="adminPlanFeatures" style="margin:0; padding-left:1.2rem;">
+                    <ul id="adminPlanFeatures">
                         <li>✅ 查看分析</li>
                         <li>❌ 管理机器人</li>
                         <li>❌ 管理管理员</li>
@@ -624,7 +697,7 @@
                         <li>❌ 管理群组</li>
                         <li>❌ 管理交易</li>
                     </ul>
-                    <ul id="planLimitsDisplay" style="margin:0.5rem 0 0 0; padding-left:1.2rem; font-size:0.85rem; color:#4b5563;">
+                    <ul id="planLimitsDisplay">
                         <li>👥 管理员: 0</li>
                         <li>🤖 机器人: 1</li>
                         <li>💳 支付方式: 5</li>
@@ -649,7 +722,7 @@
                             </div>
                         <% }); %>
                     <% } else { %>
-                        <div style="color:#94a3b8; font-size:0.9rem; text-align:center; padding:0.5rem;">
+                        <div style="color:#94a3b8; font-size:0.875rem; text-align:center; padding:0.5rem; width: 100%;">
                             <i class="fas fa-info-circle"></i> 暂无群组，请先创建群组
                         </div>
                     <% } %>
@@ -700,7 +773,7 @@
                 const hasFeature = details.features && details.features.some(function(f) {
                     return feature.includes(f) || f.includes(feature);
                 });
-                li.innerHTML = hasFeature ? '✅ ' + feature : '❌ ' + feature;
+                li.innerHTML = hasFeature ? '<span>✅</span> ' + feature : '<span style="opacity: 0.4;">❌</span> ' + feature;
                 featuresList.appendChild(li);
             });
 
