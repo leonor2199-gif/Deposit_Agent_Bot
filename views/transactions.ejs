@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交易管理 · 控制台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f4f7fc;
+            min-height: 100vh;
+        }
+        .app-bar {
+            background: rgba(18, 28, 46, 0.88);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .app-bar h1 { font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .app-bar h1 i { color: #60a5fa; }
+        .btn-secondary, .btn-danger {
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .btn-secondary { background: rgba(255,255,255,0.08); color: #e8edf9; border-color: rgba(255,255,255,0.08); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.18); transform: translateY(-1px); }
+        .btn-danger { background: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+        .btn-danger:hover { background: rgba(239,68,68,0.3); color: #fff; }
+        .viewport-container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; width: 100%; flex: 1; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: #0b1a33; }
+        .stat-card .label { font-size: 0.85rem; color: #64748b; margin-top: 0.2rem; }
+        .stat-card .number.pending { color: #f59e0b; }
+        .stat-card .number.approved { color: #22c55e; }
+        .stat-card .number.rejected { color: #ef4444; }
+        .stat-card .number.completed { color: #3b82f6; }
+        
+        .table-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            overflow-x: auto;
+            padding: 0.25rem;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.93rem; min-width: 800px; }
+        th {
+            text-align: left;
+            padding: 1.2rem 1rem 0.9rem 1.5rem;
+            font-weight: 600;
+            color: #1f2a44;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            border-bottom: 1px solid #eef2f6;
+        }
+        td { padding: 1rem 1rem 1rem 1.5rem; border-bottom: 1px solid #f0f4fa; vertical-align: middle; color: #1a2639; }
+        tr:hover td { background: #f8faff; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-completed { background: #dbeafe; color: #1e3a8a; }
+        .status-failed { background: #fce4ec; color: #881337; }
+        .empty-state { text-align: center; padding: 3rem; color: #94a3b8; }
+        .empty-state i { font-size: 3rem; display: block; margin-bottom: 1rem; }
+        .btn-export {
+            background: #16a34a;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-export:hover { background: #15803d; }
+        .admin-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; flex-wrap: wrap; gap: 1rem; }
+        .admin-controls h2 { font-weight: 600; font-size: 1.4rem; color: #0b1a33; }
+    </style>
+</head>
+<body>
+    <header class="app-bar">
+        <h1><i class="fas fa-list-ul"></i> 交易管理</h1>
+        <div>
+            <a href="/admin/dashboard" class="btn-secondary"><i class="fas fa-chart-pie"></i> 仪表板</a>
+            <a href="/admin/logout" class="btn-danger"><i class="fas fa-sign-out-alt"></i> 退出</a>
+        </div>
+    </header>
+
+    <main class="viewport-container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number"><%= stats.total || 0 %></div>
+                <div class="label">📊 总交易</div>
+            </div>
+            <div class="stat-card">
+                <div class="number pending"><%= stats.pending || 0 %></div>
+                <div class="label">⏳ 待处理</div>
+            </div>
+            <div class="stat-card">
+                <div class="number approved"><%= stats.approved || 0 %></div>
+                <div class="label">✅ 已批准</div>
+            </div>
+            <div class="stat-card">
+                <div class="number rejected"><%= stats.rejected || 0 %></div>
+                <div class="label">❌ 已拒绝</div>
+            </div>
+            <div class="stat-card">
+                <div class="number completed"><%= stats.completed || 0 %></div>
+                <div class="label">🎉 已完成</div>
+            </div>
+        </div>
+
+        <div class="admin-controls">
+            <h2><i class="fas fa-list"></i> 交易记录</h2>
+            <a href="/admin/transactions/export" class="btn-export"><i class="fas fa-download"></i> 导出CSV</a>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>客户</th>
+                        <th>支付方式</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(transactions && transactions.length > 0) { %>
+                        <% transactions.forEach(t => { %>
+                            <tr>
+                                <td><code><%= t._id.toString().slice(-6) %></code></td>
+                                <td><strong><%= t.customerFirstName || 'Unknown' %></strong></td>
+                                <td><%= t.paymentMethodName || 'N/A' %></td>
+                                <td>$<%= t.amount || 0 %></td>
+                                <td>
+                                    <span class="status-badge status-<%= t.status %>">
+                                        <%= t.getStatusText ? t.getStatusText() : t.status %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(t.createdAt).toLocaleString() %></td>
+                                <td>
+                                    <button onclick="viewTransaction('<%= t._id %>')" class="btn-edit" style="background:#e0e7ff; color:#4338ca; border:none; padding:0.3rem 0.9rem; border-radius:40px; cursor:pointer;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                暂无交易记录
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Transaction Detail Modal -->
+    <div id="transactionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> 交易详情</h2>
+                <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <div id="transactionDetail">
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            max-width: 500px;
+            width: 100%;
+            padding: 2.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.2);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h2 { font-weight: 600; font-size: 1.5rem; color: #0b1a33; display: flex; align-items: center; gap: 10px; }
+        .close-btn { font-size: 2rem; font-weight: 300; color: #4b5563; cursor: pointer; background: none; border: none; }
+        .detail-row { display: flex; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid #eef2f6; }
+        .detail-row .label { color: #64748b; font-weight: 500; }
+        .detail-row .value { color: #0b1a33; font-weight: 500; }
+        .status-select { width: 100%; padding: 0.7rem; border-radius: 12px; border: 1px solid #d1d9e6; margin: 1rem 0; }
+        .btn-update { background: #1e3a6b; color: white; padding: 0.7rem 2rem; border-radius: 60px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-update:hover { background: #14315a; }
+    </style>
+
+    <script>
+        function viewTransaction(id) {
+            fetch(`/admin/api/transactions/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('transactionDetail').innerHTML = `
+                        <div class="detail-row"><span class="label">交易ID</span><span class="value"><code>${data._id}</code></span></div>
+                        <div class="detail-row"><span class="label">客户</span><span class="value">${data.customerFirstName || 'Unknown'}</span></div>
+                        <div class="detail-row"><span class="label">支付方式</span><span class="value">${data.paymentMethodName || 'N/A'}</span></div>
+                        <div class="detail-row"><span class="label">金额</span><span class="value">$${data.amount || 0}</span></div>
+                        <div class="detail-row"><span class="label">状态</span><span class="value">${data.getStatusText ? data.getStatusText() : data.status}</span></div>
+                        <div class="detail-row"><span class="label">时间</span><span class="value">${new Date(data.createdAt).toLocaleString()}</span></div>
+                        ${data.merchantMessage ? `<div class="detail-row"><span class="label">商家消息</span><span class="value">${data.merchantMessage}</span></div>` : ''}
+                        <div style="margin-top: 1rem;">
+                            <label style="font-weight:500; display:block; margin-bottom:0.3rem;">更新状态</label>
+                            <select id="statusSelect" class="status-select">
+                                <option value="pending" ${data.status === 'pending' ? 'selected' : ''}>⏳ 待处理</option>
+                                <option value="approved" ${data.status === 'approved' ? 'selected' : ''}>✅ 已批准</option>
+                                <option value="rejected" ${data.status === 'rejected' ? 'selected' : ''}>❌ 已拒绝</option>
+                                <option value="completed" ${data.status === 'completed' ? 'selected' : ''}>🎉 已完成</option>
+                            </select>
+                            <button onclick="updateTransaction('${data._id}')" class="btn-update">更新状态</button>
+                        </div>
+                    `;
+                    document.getElementById('transactionModal').classList.add('active');
+                })
+                .catch(err => {
+                    alert('加载交易详情失败: ' + err.message);
+                });
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').classList.remove('active');
+        }
+
+        function updateTransaction(id) {
+            const status = document.getElementById('statusSelect').value;
+            fetch(`/admin/api/transactions/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('交易状态已更新！');
+                    location.reload();
+                } else {
+                    alert('更新失败: ' + (result.error || '未知错误'));
+                }
+            })
+            .catch(err => {
+                alert('请求失败: ' + err.message);
+            });
+        }
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('transactionModal')) {
+                closeTransactionModal();
+            }
+        };
+    </script>
+</body>
+</html>

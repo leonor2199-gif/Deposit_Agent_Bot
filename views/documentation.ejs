@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - PaymentBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Similar styles as landing page with documentation layout */
+        .docs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 3rem;
+        }
+        
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .docs-sidebar h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .docs-sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .docs-sidebar ul li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .docs-sidebar ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .docs-sidebar ul li a:hover {
+            color: #60a5fa;
+        }
+        
+        .docs-content h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-content h2 {
+            color: #60a5fa;
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+        }
+        
+        .docs-content h3 {
+            color: #e2e8f0;
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem;
+        }
+        
+        .docs-content p {
+            color: #94a3b8;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .docs-content code {
+            background: rgba(255,255,255,0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #60a5fa;
+            font-size: 0.9rem;
+        }
+        
+        .docs-content pre {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .docs-content pre code {
+            background: transparent;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+        
+        .docs-content .step {
+            background: rgba(255,255,255,0.03);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin: 1rem 0;
+        }
+        
+        .docs-content .step .number {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-right: 0.8rem;
+        }
+        
+        @media (max-width: 768px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .docs-sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Same navbar as landing -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            PaymentBot
+        </div>
+        <div class="nav-links">
+            <a href="/landing">Home</a>
+            <a href="/admin/login">Admin Login</a>
+            <a href="/demo">Try Demo</a>
+        </div>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="docs-sidebar">
+            <h3>📚 Documentation</h3>
+            <ul>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#bot-setup">Bot Setup</a></li>
+                <li><a href="#payment-methods">Payment Methods</a></li>
+                <li><a href="#admin-dashboard">Admin Dashboard</a></li>
+                <li><a href="#api-reference">API Reference</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <main class="docs-content">
+            <h1>🚀 Getting Started with PaymentBot</h1>
+            
+            <section id="getting-started">
+                <h2>What is PaymentBot?</h2>
+                <p>
+                    PaymentBot is a powerful Telegram bot that automates payment processing for businesses.
+                    It allows you to accept payments, manage transactions, and track revenue all within Telegram.
+                </p>
+                
+                <div class="step">
+                    <span class="number">1</span>
+                    <strong>Create a Telegram Bot</strong>
+                    <p>Talk to <code>@BotFather</code> on Telegram and create a new bot. Save the API token.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="number">2</span>
+                    <strong>Configure PaymentBot</strong>
+                    <p>Set up your bot token, merchant chat ID, and main group chat ID in the admin panel.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="number">3</span>
+                    <strong>Add Payment Methods</strong>
+                    <p>Configure your payment methods including bank transfers, wallets, and cards.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="number">4</span>
+                    <strong>Start Processing</strong>
+                    <p>Add your bot to Telegram groups and start accepting payments instantly!</p>
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>PaymentBot is a self-hosted solution. Follow these steps to install:</p>
+                
+                <pre><code># Clone the repository
+git clone https://github.com/yourusername/paymentbot.git
+
+# Install dependencies
+cd paymentbot
+npm install
+
+# Configure environment
+cp .env.example .env
+
+# Start the application
+npm run dev</code></pre>
+                
+                <p>Visit <code>http://localhost:3000</code> to access the admin dashboard.</p>
+            </section>
+
+            <section id="configuration">
+                <h2>Configuration</h2>
+                <p>Configure your <code>.env</code> file with the following variables:</p>
+                
+                <pre><code># Database
+MONGODB_URI=mongodb://localhost:27017/paymentbot
+
+# Telegram
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+MERCHANT_CHAT_ID=your_merchant_chat_id
+MAIN_GROUP_CHAT_ID=your_main_group_chat_id
+
+# Admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_secure_password
+
+# JWT
+JWT_SECRET=your_jwt_secret_key</code></pre>
+            </section>
+
+            <section id="bot-setup">
+                <h2>Bot Setup</h2>
+                <h3>Create a Bot</h3>
+                <p>1. Go to <a href="/admin/bots" style="color:#60a5fa;">Bot Management</a></p>
+                <p>2. Click <strong>"Add Bot"</strong></p>
+                <p>3. Enter your bot name and token</p>
+                <p>4. Select a plan and configure settings</p>
+                
+                <h3>Bot Commands</h3>
+                <ul style="color:#94a3b8; padding-left:1.5rem; margin-bottom:1rem;">
+                    <li><code>/start</code> - Welcome message and main menu</li>
+                    <li><code>/help</code> - How to use the bot</li>
+                    <li><code>/status</code> - Check bot status</li>
+                </ul>
+            </section>
+
+            <section id="payment-methods">
+                <h2>Payment Methods</h2>
+                <p>PaymentBot supports multiple payment methods:</p>
+                
+                <ul style="color:#94a3b8; padding-left:1.5rem; margin-bottom:1rem;">
+                    <li>🏦 <strong>Bank Transfer</strong> - Traditional bank transfers</li>
+                    <li>📱 <strong>Digital Wallet</strong> - E-wallet payments</li>
+                    <li>💳 <strong>Card Payment</strong> - Direct card payments</li>
+                    <li>🏧 <strong>Cash Deposit</strong> - In-person cash deposits</li>
+                </ul>
+                
+                <p>Each payment method can be configured with custom instructions, QR codes, and bank details.</p>
+            </section>
+
+            <section id="admin-dashboard">
+                <h2>Admin Dashboard</h2>
+                <p>The admin dashboard provides complete control over your payment system:</p>
+                
+                <ul style="color:#94a3b8; padding-left:1.5rem; margin-bottom:1rem;">
+                    <li>📊 <strong>Analytics</strong> - View transaction statistics</li>
+                    <li>🤖 <strong>Bot Management</strong> - Manage multiple bots</li>
+                    <li>💳 <strong>Payment Methods</strong> - Configure payment options</li>
+                    <li>📋 <strong>Transactions</strong> - View and manage transactions</li>
+                    <li>👥 <strong>User Management</strong> - Manage admin users</li>
+                </ul>
+            </section>
+
+            <section id="faq">
+                <h2>FAQ</h2>
+                
+                <h3>How do I get my chat ID?</h3>
+                <p>Talk to <code>@userinfobot</code> on Telegram to get your user ID. For group IDs, add <code>@getidsbot</code> to your group.</p>
+                
+                <h3>Can I use multiple bots?</h3>
+                <p>Yes! PaymentBot supports multiple bots with different configurations and payment methods.</p>
+                
+                <h3>How secure is PaymentBot?</h3>
+                <p>PaymentBot uses JWT authentication, encrypted sessions, and follows security best practices for payment processing.</p>
+                
+                <h3>Do I need coding skills?</h3>
+                <p>No! PaymentBot comes with a user-friendly admin dashboard. No coding required for basic setup and management.</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 PaymentBot. All rights reserved.</p>
+    </footer>
+</body>
+</html>

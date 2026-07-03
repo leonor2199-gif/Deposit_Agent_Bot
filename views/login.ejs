@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"><title>管理员访问网关</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="centered-layout">
+    <div class="auth-card">
+        <h2>系统终端登录</h2>
+        <% if(error) { %> <div class="alert-banner"><%= error %></div> <% } %>
+        <form action="/admin/login" method="POST">
+            <input type="text" name="username" placeholder="用户名" required autocomplete="off">
+            <input type="password" name="password" placeholder="密码" required>
+            <button type="submit" class="btn-primary">身份验证</button>
+        </form>
+    </div>
+</body>
+</html>
