@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方案管理 · 控制台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-bar {
+            background: rgba(18, 28, 46, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 0.9rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0, 20, 40, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .app-bar h1 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-bar h1 i {
+            color: #60a5fa;
+        }
+
+        .app-bar > div {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary, .btn-danger {
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e8edf9;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fff;
+        }
+
+        .viewport-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .admin-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-controls h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: #0b1a33;
+        }
+
+        .admin-controls .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #1e3a6b;
+            color: white;
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            border: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(26, 67, 113, 0.25);
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: #14315a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(18, 52, 97, 0.3);
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            border: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+
+        /* Plan Cards */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f6;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+            border-color: #60a5fa;
+        }
+
+        .plan-card.popular {
+            border-color: #fbbf24;
+            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.15);
+        }
+
+        .plan-card.popular .badge-popular {
+            background: #fbbf24;
+            color: #000;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-card .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .plan-card .plan-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0b1a33;
+        }
+
+        .plan-card .plan-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0b1a33;
+        }
+
+        .plan-card .plan-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        .plan-card .plan-description {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-card .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .plan-card .plan-features li {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            color: #1f2a44;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .plan-card .plan-features li i {
+            color: #22c55e;
+            width: 18px;
+        }
+
+        .plan-card .plan-features li .disabled {
+            color: #ef4444;
+        }
+
+        .plan-card .plan-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .plan-card .plan-actions .btn-edit-plan {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.15s;
+        }
+
+        .plan-card .plan-actions .btn-edit-plan:hover {
+            background: #dbeafe;
+        }
+
+        .plan-card .plan-actions .btn-delete-plan {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.15s;
+        }
+
+        .plan-card .plan-actions .btn-delete-plan:hover {
+            background: #fecaca;
+        }
+
+        .plan-card .badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .plan-card .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .plan-card .badge-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            max-width: 700px;
+            width: 100%;
+            padding: 2.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .modal-header h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #4b5563;
+            cursor: pointer;
+            transition: 0.2s;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1f2a44;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid #d1d9e6;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            background: white;
+            transition: 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1e3a6b;
+            box-shadow: 0 0 0 4px rgba(30, 58, 107, 0.08);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem 0;
+        }
+
+        .form-group-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1e3a6b;
+        }
+
+        .form-group-checkbox label {
+            margin: 0;
+            font-weight: 400;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .modal-actions .btn-secondary-action {
+            background: #eef2f6;
+            color: #1f2a44;
+            padding: 0.7rem 2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .modal-actions .btn-secondary-action:hover {
+            background: #dce2ec;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 650px) {
+            .app-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.8rem 1.2rem;
+            }
+            .app-bar > div {
+                justify-content: flex-start;
+            }
+            .viewport-container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            .admin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .admin-controls .actions {
+                flex-wrap: wrap;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-bar">
+        <h1><i class="fas fa-crown"></i> 方案管理</h1>
+        <div>
+            <a href="/admin/dashboard" class="btn-secondary"><i class="fas fa-chart-pie"></i> 仪表板</a>
+            <a href="/admin/logout" class="btn-danger"><i class="fas fa-sign-out-alt"></i> 退出</a>
+        </div>
+    </header>
+
+    <main class="viewport-container">
+        <div class="admin-controls">
+            <h2><i class="fas fa-crown" style="color:#fbbf24;"></i> 定价方案</h2>
+            <div class="actions">
+                <button onclick="showCreateForm()" class="btn-primary"><i class="fas fa-plus"></i> 添加方案</button>
+                <button onclick="seedDefaultPlans()" class="btn-success"><i class="fas fa-database"></i> 恢复默认</button>
+            </div>
+        </div>
+
+        <div class="plan-grid">
+            <% if(plans && plans.length > 0) { %>
+                <% plans.forEach(plan => { %>
+                    <div class="plan-card <%= plan.isPopular ? 'popular' : '' %>">
+                        <% if(plan.isPopular) { %>
+                            <div class="badge-popular">⭐ 最受欢迎</div>
+                        <% } %>
+                        <div class="plan-header">
+                            <div>
+                                <div class="plan-name"><%= plan.displayName %></div>
+                                <div style="font-size:0.75rem; color:#64748b;"><%= plan.name %></div>
+                            </div>
+                            <div>
+                                <span class="badge <%= plan.isActive ? 'badge-active' : 'badge-inactive' %>">
+                                    <%= plan.isActive ? '已启用' : '已停用' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="plan-price">
+                            $<%= plan.price %><span> / <%= plan.interval === 'forever' ? '永久' : plan.interval === 'one-time' ? '一次性' : plan.interval %></span>
+                        </div>
+
+                        <div class="plan-description"><%= plan.description || 'No description' %></div>
+
+                        <ul class="plan-features">
+                            <li><i class="fas fa-envelope"></i> <%= plan.maxMessages === Infinity ? '∞' : plan.maxMessages %> 条消息</li>
+                            <li><i class="fas fa-users"></i> <%= plan.maxAdmins === Infinity ? '∞' : plan.maxAdmins %> 个管理员</li>
+                            <li><i class="fas fa-credit-card"></i> <%= plan.maxPaymentMethods === Infinity ? '∞' : plan.maxPaymentMethods %> 个支付方式</li>
+                            <li><i class="fas fa-layer-group"></i> <%= plan.maxGroups === Infinity ? '∞' : plan.maxGroups %> 个群组</li>
+                            <li>
+                                <i class="fas <%= plan.features.qrCodeSupport ? 'fa-check' : 'fa-times disabled' %>"></i>
+                                QR码支持
+                            </li>
+                            <li>
+                                <i class="fas <%= plan.features.customMessages ? 'fa-check' : 'fa-times disabled' %>"></i>
+                                自定义消息
+                            </li>
+                            <li>
+                                <i class="fas <%= plan.features.analytics ? 'fa-check' : 'fa-times disabled' %>"></i>
+                                数据分析
+                            </li>
+                            <li>
+                                <i class="fas <%= plan.features.prioritySupport ? 'fa-check' : 'fa-times disabled' %>"></i>
+                                优先支持
+                            </li>
+                            <li>
+                                <i class="fas <%= plan.features.apiAccess ? 'fa-check' : 'fa-times disabled' %>"></i>
+                                API访问
+                            </li>
+                        </ul>
+
+                        <div style="font-size:0.8rem; color:#94a3b8; margin:0.5rem 0;">
+                            排序: <%= plan.order %>
+                            <% if(plan.badge) { %> · 标签: <strong><%= plan.badge %></strong><% } %>
+                        </div>
+
+                        <div class="plan-actions">
+                            <button onclick="editPlan('<%= plan._id %>')" class="btn-edit-plan"><i class="fas fa-edit"></i> 编辑</button>
+                            <button onclick="deletePlan('<%= plan._id %>')" class="btn-delete-plan"><i class="fas fa-trash"></i> 删除</button>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-crown"></i>
+                    暂无方案，点击 <a href="#" onclick="showCreateForm(); return false;" style="color: #2563eb;">添加方案</a> 创建第一个
+                    <br><br>
+                    <button onclick="seedDefaultPlans()" class="btn-success"><i class="fas fa-database"></i> 恢复默认方案</button>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Create/Edit Modal -->
+    <div id="planModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-crown"></i> <span id="modalTitle">添加方案</span></h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="planForm">
+                <input type="hidden" id="planId" name="id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> 方案名称 *</label>
+                        <input type="text" id="name" name="name" placeholder="例如: pro" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-display"></i> 显示名称 *</label>
+                        <input type="text" id="displayName" name="displayName" placeholder="例如: 专业版" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> 描述</label>
+                    <input type="text" id="description" name="description" placeholder="简短描述此方案">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-dollar-sign"></i> 价格 *</label>
+                        <input type="number" id="price" name="price" placeholder="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> 周期</label>
+                        <select id="interval" name="interval">
+                            <option value="monthly">每月</option>
+                            <option value="yearly">每年</option>
+                            <option value="one-time">一次性</option>
+                            <option value="forever">永久</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> 最大消息数</label>
+                        <input type="number" id="maxMessages" name="maxMessages" placeholder="10">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> 最大管理员数</label>
+                        <input type="number" id="maxAdmins" name="maxAdmins" placeholder="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> 最大支付方式</label>
+                        <input type="number" id="maxPaymentMethods" name="maxPaymentMethods" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> 最大群组数</label>
+                        <input type="number" id="maxGroups" name="maxGroups" placeholder="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-sort"></i> 排序</label>
+                        <input type="number" id="order" name="order" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> 标签</label>
+                        <input type="text" id="badge" name="badge" placeholder="例如: 最受欢迎">
+                    </div>
+                </div>
+
+                <div style="margin: 0.5rem 0;">
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="isPopular" name="isPopular">
+                        <label for="isPopular">标记为最受欢迎</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="isActive" name="isActive" checked>
+                        <label for="isActive">已启用</label>
+                    </div>
+                </div>
+
+                <h4 style="margin: 1rem 0 0.5rem 0; color: #0b1a33;">🔧 功能设置</h4>
+                <div class="form-row">
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="qrCodeSupport" name="features[qrCodeSupport]" checked>
+                        <label for="qrCodeSupport">QR码支持</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="customMessages" name="features[customMessages]">
+                        <label for="customMessages">自定义消息</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="multiLanguage" name="features[multiLanguage]">
+                        <label for="multiLanguage">多语言支持</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="analytics" name="features[analytics]">
+                        <label for="analytics">数据分析</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="exportData" name="features[exportData]">
+                        <label for="exportData">数据导出</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="prioritySupport" name="features[prioritySupport]">
+                        <label for="prioritySupport">优先支持</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="customBranding" name="features[customBranding]">
+                        <label for="customBranding">自定义品牌</label>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <input type="checkbox" id="apiAccess" name="features[apiAccess]">
+                        <label for="apiAccess">API访问</label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> 保存</button>
+                    <button type="button" onclick="closeModal()" class="btn-secondary-action">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showCreateForm() {
+            document.getElementById('modalTitle').textContent = '添加方案';
+            document.getElementById('planForm').reset();
+            document.getElementById('planId').value = '';
+            document.getElementById('isActive').checked = true;
+            document.getElementById('qrCodeSupport').checked = true;
+            document.getElementById('planModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('planModal').classList.remove('active');
+        }
+
+        async function editPlan(id) {
+            document.getElementById('modalTitle').textContent = '编辑方案';
+            document.getElementById('planId').value = id;
+
+            try {
+                const res = await fetch(`/admin/api/plans/${id}`);
+                if (!res.ok) throw new Error('Failed to fetch plan');
+                const data = await res.json();
+
+                document.getElementById('name').value = data.name;
+                document.getElementById('displayName').value = data.displayName;
+                document.getElementById('description').value = data.description || '';
+                document.getElementById('price').value = data.price;
+                document.getElementById('interval').value = data.interval;
+                document.getElementById('maxMessages').value = data.maxMessages === Infinity ? '' : data.maxMessages;
+                document.getElementById('maxAdmins').value = data.maxAdmins === Infinity ? '' : data.maxAdmins;
+                document.getElementById('maxPaymentMethods').value = data.maxPaymentMethods === Infinity ? '' : data.maxPaymentMethods;
+                document.getElementById('maxGroups').value = data.maxGroups === Infinity ? '' : data.maxGroups;
+                document.getElementById('order').value = data.order || 0;
+                document.getElementById('badge').value = data.badge || '';
+
+                document.getElementById('isActive').checked = data.isActive;
+                document.getElementById('isPopular').checked = data.isPopular || false;
+
+                // Features
+                document.getElementById('qrCodeSupport').checked = data.features?.qrCodeSupport || false;
+                document.getElementById('customMessages').checked = data.features?.customMessages || false;
+                document.getElementById('multiLanguage').checked = data.features?.multiLanguage || false;
+                document.getElementById('analytics').checked = data.features?.analytics || false;
+                document.getElementById('exportData').checked = data.features?.exportData || false;
+                document.getElementById('prioritySupport').checked = data.features?.prioritySupport || false;
+                document.getElementById('customBranding').checked = data.features?.customBranding || false;
+                document.getElementById('apiAccess').checked = data.features?.apiAccess || false;
+
+                document.getElementById('planModal').classList.add('active');
+            } catch (err) {
+                alert('加载方案数据失败: ' + err.message);
+            }
+        }
+
+        document.getElementById('planForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('planId').value;
+            const data = {
+                name: document.getElementById('name').value.trim(),
+                displayName: document.getElementById('displayName').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                price: parseFloat(document.getElementById('price').value) || 0,
+                interval: document.getElementById('interval').value,
+                maxMessages: parseInt(document.getElementById('maxMessages').value) || 0,
+                maxAdmins: parseInt(document.getElementById('maxAdmins').value) || 0,
+                maxPaymentMethods: parseInt(document.getElementById('maxPaymentMethods').value) || 0,
+                maxGroups: parseInt(document.getElementById('maxGroups').value) || 0,
+                order: parseInt(document.getElementById('order').value) || 0,
+                badge: document.getElementById('badge').value.trim(),
+                isActive: document.getElementById('isActive').checked,
+                isPopular: document.getElementById('isPopular').checked,
+                features: {
+                    qrCodeSupport: document.getElementById('qrCodeSupport').checked,
+                    customMessages: document.getElementById('customMessages').checked,
+                    multiLanguage: document.getElementById('multiLanguage').checked,
+                    analytics: document.getElementById('analytics').checked,
+                    exportData: document.getElementById('exportData').checked,
+                    prioritySupport: document.getElementById('prioritySupport').checked,
+                    customBranding: document.getElementById('customBranding').checked,
+                    apiAccess: document.getElementById('apiAccess').checked
+                }
+            };
+
+            if (!data.name || !data.displayName) {
+                alert('请填写方案名称和显示名称');
+                return;
+            }
+
+            const url = id ? `/admin/plans/${id}` : '/admin/plans';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const error = await res.json();
+                    alert('错误: ' + (error.error || '操作失败'));
+                }
+            } catch (err) {
+                alert('请求失败: ' + err.message);
+            }
+        });
+
+        async function deletePlan(id) {
+            if (!confirm('确定要永久删除此方案吗？如果方案正在被使用，删除将失败。')) return;
+
+            try {
+                const res = await fetch(`/admin/plans/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const error = await res.json();
+                    alert('错误: ' + (error.error || '删除失败'));
+                }
+            } catch (err) {
+                alert('请求失败: ' + err.message);
+            }
+        }
+
+        async function seedDefaultPlans() {
+            if (!confirm('这将恢复默认方案。现有的自定义方案将被更新或覆盖。继续？')) return;
+
+            try {
+                const res = await fetch('/admin/plans/seed', { method: 'POST' });
+                if (res.ok) {
+                    alert('默认方案已恢复！');
+                    location.reload();
+                } else {
+                    const error = await res.json();
+                    alert('错误: ' + (error.error || '恢复失败'));
+                }
+            } catch (err) {
+                alert('请求失败: ' + err.message);
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('planModal');
+            if (event.target === modal) closeModal();
+        };
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
