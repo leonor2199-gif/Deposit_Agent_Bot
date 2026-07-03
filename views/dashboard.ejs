@@ -6,46 +6,80 @@
     <title>控制中心 · 支付基础设施</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --bg-main: #f8fafc;
+            --panel-bg: rgba(255, 255, 255, 0.8);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #eff6ff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --status-active-bg: #f0fdf4;
+            --status-active-text: #166534;
+            --status-active-dot: #22c55e;
+            
+            --status-inactive-bg: #fef2f2;
+            --status-inactive-text: #991b1b;
+            --status-inactive-dot: #ef4444;
+            
+            --card-radius: 16px;
+            --transition-speed: 0.2s;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background: #f4f7fc;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* --- Header Navigation Bar --- */
         .app-bar {
-            background: rgba(18, 28, 46, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
             color: white;
-            padding: 0.9rem 2.5rem;
+            padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(0, 20, 40, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: var(--shadow-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .app-bar h1 {
             font-weight: 600;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
+            font-size: 1.35rem;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .app-bar h1 i {
-            color: #60a5fa;
+            color: #fbbf24;
+            font-size: 1.45rem;
+            filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.2));
         }
 
         .app-bar > div {
@@ -55,16 +89,17 @@
             flex-wrap: wrap;
         }
 
+        /* --- User Badge --- */
         .user-badge {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             padding: 0.3rem 1.2rem;
-            border-radius: 60px;
+            border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .user-badge i {
@@ -72,11 +107,11 @@
         }
 
         .plan-badge {
-            padding: 0.2rem 1rem;
-            border-radius: 60px;
-            font-size: 0.75rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .plan-badge.demo { background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); }
@@ -85,24 +120,55 @@
         .plan-badge.enterprise { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
         .plan-badge.superadmin { background: rgba(244, 63, 94, 0.2); color: #fb7185; border-color: rgba(244, 63, 94, 0.3); }
 
-        .btn-action, .btn-danger {
-            padding: 0.4rem 1.2rem;
-            border-radius: 60px;
+        /* --- Global Buttons --- */
+        .btn-action, .btn-danger, .btn-primary-sm {
+            padding: 0.5rem 1.1rem;
+            border-radius: 12px;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            gap: 8px;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
-            background: rgba(255, 255, 255, 0.06);
-            color: #e8edf9;
-            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.05);
         }
 
         .btn-action:hover {
-            background: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-primary-sm {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-primary-sm:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
             transform: translateY(-1px);
             color: white;
         }
@@ -113,81 +179,65 @@
             pointer-events: none;
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-            color: #fff;
-        }
-
-        .btn-primary-sm {
-            background: #1e3a6b;
-            color: white;
-            padding: 0.4rem 1.2rem;
-            border-radius: 60px;
-            font-weight: 500;
-            border: none;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-decoration: none;
-        }
-
-        .btn-primary-sm:hover {
-            background: #14315a;
-            transform: translateY(-1px);
-            color: white;
-        }
-
         .btn-primary-sm.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
+            transform: none !important;
         }
 
+        /* --- Layout Main Elements --- */
         .viewport-container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 2rem auto;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             width: 100%;
             flex: 1;
         }
 
+        /* --- Stats Grid --- */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
-            padding: 1.2rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.7);
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-sm), var(--shadow-md);
+            border: 1px solid var(--border-color);
             text-align: center;
+            transition: all var(--transition-speed);
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
 
         .stat-card h3 {
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: #64748b;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .stat-card h3 i {
+            color: var(--accent-primary);
         }
 
         .stat-number {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #0b1a33;
+            color: var(--text-primary);
             margin-top: 0.2rem;
         }
 
@@ -198,20 +248,20 @@
         .stat-number .limit-label {
             font-size: 0.7rem;
             font-weight: 400;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
+        /* --- Limit Warning --- */
         .limit-warning {
-            background: #fef3c7;
+            background: #fffbeb;
             border: 1px solid #f59e0b;
             color: #92400e;
             padding: 0.8rem 1.5rem;
-            border-radius: 16px;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 0.9rem;
             flex-wrap: wrap;
         }
 
@@ -224,17 +274,20 @@
             margin-left: auto;
             background: #f59e0b;
             color: white;
-            padding: 0.3rem 1.2rem;
-            border-radius: 60px;
+            padding: 0.4rem 1.2rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.8rem;
+            transition: all var(--transition-speed);
         }
 
         .limit-warning .btn-upgrade:hover {
             background: #d97706;
+            transform: translateY(-1px);
         }
 
+        /* --- Section Title --- */
         .section-title {
             display: flex;
             align-items: baseline;
@@ -246,43 +299,59 @@
 
         .section-title h2 {
             font-weight: 600;
-            font-size: 1.4rem;
-            color: #0b1a33;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .section-title h2 i {
+            color: var(--accent-primary);
+        }
+
+        /* --- Modern Data Table Rendering --- */
         .table-wrapper {
             background: white;
-            border-radius: 28px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-sm), var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-scroll {
             overflow-x: auto;
-            padding: 0.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             min-width: 720px;
+            text-align: left;
         }
 
         th {
-            text-align: left;
-            padding: 1rem 1rem 0.8rem 1.5rem;
+            padding: 1rem 1.5rem;
             font-weight: 600;
-            color: #1f2a44;
-            letter-spacing: 0.02em;
-            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.775rem;
             text-transform: uppercase;
-            opacity: 0.7;
-            border-bottom: 1px solid #eef2f6;
+            letter-spacing: 0.05em;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         td {
-            padding: 0.8rem 1rem 0.8rem 1.5rem;
-            border-bottom: 1px solid #f0f4fa;
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
-            color: #1a2639;
+            color: var(--text-primary);
+            background: white;
         }
 
         tr:last-child td {
@@ -290,111 +359,233 @@
         }
 
         tr:hover td {
-            background: #f8faff;
+            background: #f8fafc;
         }
 
+        td strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 0.15rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #1e293b;
+            font-family: 'Menlo', 'Monaco', monospace;
+        }
+
+        /* --- Decorative Badges & Indicators --- */
         .badge {
             display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
-            letter-spacing: 0.01em;
-            background: #eef2f6;
-            color: #1f2a44;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .badge-type {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
         }
 
         .status-indicator {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 0.2rem 0.9rem 0.2rem 0.7rem;
-            border-radius: 40px;
-            font-size: 0.78rem;
+            padding: 0.2rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 500;
         }
 
         .status-indicator::before {
-            content: "●";
-            font-size: 0.6rem;
-            margin-right: 2px;
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
         }
 
         .status-indicator.active {
-            background: #dcfce7;
-            color: #166534;
+            background: var(--status-active-bg);
+            color: var(--status-active-text);
         }
-        .status-indicator.active::before { color: #22c55e; }
+
+        .status-indicator.active::before {
+            background: var(--status-active-dot);
+        }
 
         .status-indicator.inactive {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--status-inactive-bg);
+            color: var(--status-inactive-text);
         }
-        .status-indicator.inactive::before { color: #ef4444; }
 
+        .status-indicator.inactive::before {
+            background: var(--status-inactive-dot);
+        }
+
+        /* --- Row Inline Actions Buttons --- */
         .btn-edit, .btn-delete {
             border: none;
             background: transparent;
             font-size: 0.8rem;
             font-weight: 500;
-            padding: 0.3rem 0.9rem;
-            border-radius: 40px;
-            transition: all 0.15s;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.15s ease;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             text-decoration: none;
-            display: inline-block;
         }
 
         .btn-edit {
-            color: #2563eb;
-            background: #eff6ff;
+            color: var(--accent-primary);
+            background: var(--accent-light);
         }
+
         .btn-edit:hover {
             background: #dbeafe;
-            color: #1e40af;
+            color: var(--accent-hover);
         }
 
         .btn-delete {
-            color: #b91c1c;
-            background: #fee2e2;
+            color: #dc2626;
+            background: #fef2f2;
         }
+
         .btn-delete:hover {
-            background: #fecaca;
-            color: #7f1d1d;
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
+            padding: 4rem 2rem !important;
+            color: var(--text-muted);
         }
+
         .empty-state i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             display: block;
             margin-bottom: 1rem;
+            color: var(--border-color);
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #eef2f6; border-radius: 20px; }
-        ::-webkit-scrollbar-thumb { background: #bac8d9; border-radius: 20px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9aadc4; }
+        .empty-state a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
 
-        @media (max-width: 720px) {
-            .app-bar { padding: 0.8rem 1.2rem; flex-direction: column; align-items: stretch; }
-            .app-bar > div { justify-content: flex-start; flex-wrap: wrap; }
-            .viewport-container { padding: 0 1rem; margin: 1rem auto; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
-            .stat-card { padding: 0.8rem; }
-            .stat-number { font-size: 1.4rem; }
-            .limit-warning { flex-direction: column; text-align: center; }
-            .limit-warning .btn-upgrade { margin-left: 0; }
-            .section-title { flex-direction: column; align-items: flex-start; }
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Scrollbar Performance Modernization --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* --- Responsive Adaptive Controls --- */
+        @media (max-width: 768px) {
+            .app-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 1rem 1.5rem;
+            }
+            .app-bar > div {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+            .viewport-container {
+                padding: 0 1rem;
+                margin: 1.5rem auto;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            .stat-card {
+                padding: 0.8rem 1rem;
+            }
+            .stat-number {
+                font-size: 1.4rem;
+            }
+            .limit-warning {
+                flex-direction: column;
+                text-align: center;
+            }
+            .limit-warning .btn-upgrade {
+                margin-left: 0;
+            }
+            .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            th, td {
+                padding: 0.85rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-bar h1 {
+                font-size: 1.1rem;
+            }
+            .app-bar h1 i {
+                font-size: 1.2rem;
+            }
+            .btn-action, .btn-danger, .btn-primary-sm {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stat-card h3 {
+                font-size: 0.65rem;
+            }
+            .stat-number {
+                font-size: 1.2rem;
+            }
+            .user-badge {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.8rem;
+            }
+            th, td {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
     <header class="app-bar">
-        <h1><i class="fas fa-credit-card"></i> 支付基础设施控制台</h1>
+        <h1><i class="fas fa-credit-card"></i> 支付基础设施</h1>
         <div>
             <span class="user-badge">
                 <i class="fas fa-user-circle"></i> 
@@ -422,7 +613,7 @@
                 </a>
             <% } %>
             
-            <a href="/admin/logout" class="btn-danger"><i class="fas fa-sign-out-alt"></i> 终止会话</a>
+            <a href="/admin/logout" class="btn-danger"><i class="fas fa-sign-out-alt"></i> 退出</a>
         </div>
     </header>
 
@@ -495,7 +686,7 @@
 
         <!-- Payment Methods Table -->
         <div class="section-title">
-            <h2><i class="fas fa-list-ul" style="margin-right:10px; color:#1e3a6b;"></i> 支付通道管理</h2>
+            <h2><i class="fas fa-list-ul"></i> 支付通道管理</h2>
             <% if(typeof canAdd !== 'undefined' && canAdd && canAdd.paymentMethod !== false) { %>
                 <a href="/admin/methods/new" class="btn-primary-sm"><i class="fas fa-plus"></i> 新增通道</a>
             <% } else { %>
@@ -504,48 +695,50 @@
         </div>
 
         <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Bot</th>
-                        <th>支付通道名称</th>
-                        <th>类型</th>
-                        <th>银行标识</th>
-                        <th>收款账号</th>
-                        <th>可用状态</th>
-                        <th>操作控制</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if(typeof methods !== 'undefined' && methods && methods.length > 0) { %>
-                        <% methods.forEach(function(m) { %>
-                            <tr id="row-<%= m._id %>">
-                                <td><span class="badge"><%= m.botId ? m.botId.name : '未分配' %></span></td>
-                                <td><strong><%= m.name %></strong></td>
-                                <td><span class="badge"><%= m.type %></span></td>
-                                <td><%= m.bankName %></td>
-                                <td><code><%= m.accountNumber %></code></td>
-                                <td>
-                                    <span class="status-indicator <%= m.isActive ? 'active' : 'inactive' %>">
-                                        <%= m.isActive ? '已启用' : '已停用' %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="/admin/methods/edit/<%= m._id %>" class="btn-edit"><i class="fas fa-edit"></i> 修改</a>
-                                    <button onclick="purgeGate('<%= m._id %>')" class="btn-delete"><i class="fas fa-trash-alt"></i> 删除</button>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bot</th>
+                            <th>支付通道名称</th>
+                            <th>类型</th>
+                            <th>银行标识</th>
+                            <th>收款账号</th>
+                            <th>可用状态</th>
+                            <th>操作控制</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(typeof methods !== 'undefined' && methods && methods.length > 0) { %>
+                            <% methods.forEach(function(m) { %>
+                                <tr id="row-<%= m._id %>">
+                                    <td><span class="badge"><%= m.botId ? m.botId.name : '未分配' %></span></td>
+                                    <td><strong><%= m.name %></strong></td>
+                                    <td><span class="badge badge-type"><%= m.type %></span></td>
+                                    <td><%= m.bankName %></td>
+                                    <td><code><%= m.accountNumber %></code></td>
+                                    <td>
+                                        <span class="status-indicator <%= m.isActive ? 'active' : 'inactive' %>">
+                                            <%= m.isActive ? '已启用' : '已停用' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/methods/edit/<%= m._id %>" class="btn-edit"><i class="fas fa-edit"></i> 修改</a>
+                                        <button onclick="purgeGate('<%= m._id %>')" class="btn-delete"><i class="fas fa-trash-alt"></i> 删除</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    暂无支付方式，点击 <a href="/admin/methods/new">新建配置</a> 添加
                                 </td>
                             </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="7" class="empty-state">
-                                <i class="fas fa-inbox"></i>
-                                暂无支付方式，点击 <a href="/admin/methods/new" style="color: #2563eb;">新建配置</a> 添加
-                            </td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
