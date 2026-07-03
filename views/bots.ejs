@@ -6,448 +6,779 @@
     <title>Bot 管理 · 控制台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --bg-main: #f3f4f6;
+            --panel-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-light: #eef2ff;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --status-active-bg: #d1fae5;
+            --status-active-text: #065f46;
+            --status-active-dot: #10b981;
+            
+            --status-inactive-bg: #fee2e2;
+            --status-inactive-text: #991b1b;
+            --status-inactive-dot: #ef4444;
+            
+            --card-radius: 16px;
+            --transition-speed: 0.2s;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
+
         body {
-            background: #f4f7fc;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
+
+        /* --- Header Navigation Bar --- */
         .app-bar {
-            background: rgba(18, 28, 46, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            color: white;
-            padding: 0.9rem 2.5rem;
+            background: #ffffff;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            color: var(--text-primary);
+            padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(0, 20, 40, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
         }
+
         .app-bar h1 {
-            font-weight: 600;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .app-bar h1 i { color: #60a5fa; }
-        .app-bar > div {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;
+            color: var(--text-primary);
         }
+
+        .app-bar h1 i {
+            color: var(--accent-primary);
+            font-size: 1.35rem;
+            background: var(--accent-light);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .app-bar div {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* --- Global Buttons --- */
         .btn-secondary, .btn-danger {
-            padding: 0.4rem 1.2rem;
-            border-radius: 60px;
+            padding: 0.5rem 1.1rem;
+            border-radius: 10px;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            gap: 8px;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
         }
+
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: #e8edf9;
-            border-color: rgba(255, 255, 255, 0.08);
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            border-color: var(--border-color);
         }
+
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-1px);
+            background: var(--border-color);
+            color: var(--text-primary);
         }
+
         .btn-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.2);
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
         }
+
         .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-            color: #fff;
-        }
-        .limit-warning {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            color: #92400e;
-            padding: 0.8rem 1.5rem;
-            border-radius: 16px;
-            margin: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .limit-warning i { color: #f59e0b; font-size: 1.2rem; }
-        .limit-warning .btn-upgrade {
-            margin-left: auto;
-            background: #f59e0b;
+            background: #dc2626;
             color: white;
-            padding: 0.3rem 1.2rem;
-            border-radius: 60px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
         }
-        .limit-warning .btn-upgrade:hover { background: #d97706; }
+
+        /* --- Layout Main Elements --- */
         .viewport-container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 2rem auto;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             width: 100%;
             flex: 1;
         }
+
         .admin-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
-        .admin-controls h2 {
-            font-weight: 600;
-            font-size: 1.4rem;
-            color: #0b1a33;
+
+        .admin-controls .stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
+
+        .admin-controls .stats span {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
         .btn-primary {
-            background: #1e3a6b;
+            background: var(--accent-primary);
             color: white;
-            padding: 0.7rem 1.8rem;
-            border-radius: 60px;
-            font-weight: 600;
+            padding: 0.65rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
             border: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            box-shadow: 0 6px 14px rgba(26, 67, 113, 0.25);
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .btn-primary:hover {
-            background: #14315a;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(18, 52, 97, 0.3);
+            background: var(--accent-hover);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
         }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
         .btn-primary.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        /* --- Limit Warning --- */
+        .limit-warning {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            margin: 0 2.5rem 1.5rem 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .limit-warning i {
+            color: #f59e0b;
+            font-size: 1.2rem;
+        }
+
+        .limit-warning .btn-upgrade {
+            margin-left: auto;
+            background: #f59e0b;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all var(--transition-speed);
+        }
+
+        .limit-warning .btn-upgrade:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+        }
+
+        /* --- Modern Data Table Rendering --- */
         .table-wrapper {
             background: white;
-            border-radius: 28px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 20, 40, 0.04);
-            overflow-x: auto;
-            padding: 0.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
+
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.93rem;
+            font-size: 0.875rem;
             min-width: 900px;
-        }
-        th {
             text-align: left;
-            padding: 1.2rem 1rem 0.9rem 1.5rem;
+        }
+
+        th {
+            padding: 1rem 1.5rem;
             font-weight: 600;
-            color: #1f2a44;
-            letter-spacing: 0.02em;
+            color: var(--text-secondary);
             font-size: 0.75rem;
             text-transform: uppercase;
-            opacity: 0.7;
-            border-bottom: 1px solid #eef2f6;
+            letter-spacing: 0.04em;
+            background: #f9fafb;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
+
         td {
-            padding: 1rem 1rem 1rem 1.5rem;
-            border-bottom: 1px solid #f0f4fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
-            color: #1a2639;
+            color: var(--text-primary);
+            background: white;
         }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f8faff; }
-        td strong { font-weight: 600; color: #0b1a33; }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        td strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        td strong i {
+            color: var(--accent-primary);
+            margin-right: 6px;
+        }
+
         code {
             background: #f1f5f9;
             padding: 0.15rem 0.6rem;
-            border-radius: 30px;
+            border-radius: 6px;
             font-size: 0.8rem;
             color: #1e293b;
             font-family: 'Menlo', 'Monaco', monospace;
         }
+
+        /* --- Decorative Badges & Indicators --- */
         .badge-plan {
             display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
+            padding: 0.25rem 0.7rem;
+            border-radius: 6px;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
-        .badge-demo { background: #dbeafe; color: #1e3a8a; }
+        .badge-demo { background: #f3f4f6; color: #4b5563; }
         .badge-starter { background: #d1fae5; color: #065f46; }
         .badge-pro { background: #fef3c7; color: #92400e; }
         .badge-enterprise { background: #ede9fe; color: #5b21b6; }
         .badge-lifetime { background: #fbbf24; color: #000; }
+
         .status-indicator {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 0.2rem 0.9rem 0.2rem 0.7rem;
-            border-radius: 40px;
-            font-size: 0.78rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 500;
         }
+
         .status-indicator::before {
-            content: "●";
-            font-size: 0.6rem;
-            margin-right: 2px;
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
         }
+
         .status-indicator.active {
-            background: #dcfce7;
-            color: #166534;
+            background: var(--status-active-bg);
+            color: var(--status-active-text);
         }
-        .status-indicator.active::before { color: #22c55e; }
+
+        .status-indicator.active::before {
+            background: var(--status-active-dot);
+        }
+
         .status-indicator.inactive {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--status-inactive-bg);
+            color: var(--status-inactive-text);
         }
-        .status-indicator.inactive::before { color: #ef4444; }
+
+        .status-indicator.inactive::before {
+            background: var(--status-inactive-dot);
+        }
+
+        /* --- Row Inline Actions Buttons --- */
         .btn-edit, .btn-delete, .btn-stats {
             border: none;
             background: transparent;
             font-size: 0.8rem;
             font-weight: 500;
-            padding: 0.3rem 0.9rem;
-            border-radius: 40px;
-            transition: all 0.15s;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.15s ease;
             cursor: pointer;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
+
         .btn-edit {
-            color: #2563eb;
-            background: #eff6ff;
+            color: var(--accent-primary);
+            background: var(--accent-light);
         }
+
         .btn-edit:hover {
             background: #dbeafe;
-            color: #1e40af;
+            color: var(--accent-hover);
         }
+
         .btn-delete {
-            color: #b91c1c;
-            background: #fee2e2;
+            color: #dc2626;
+            background: #fef2f2;
         }
+
         .btn-delete:hover {
-            background: #fecaca;
-            color: #7f1d1d;
+            background: #fee2e2;
+            color: #991b1b;
         }
+
         .btn-stats {
             color: #4338ca;
             background: #e0e7ff;
         }
+
         .btn-stats:hover {
             background: #c7d2fe;
         }
+
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
+            padding: 4rem 2rem !important;
+            color: var(--text-muted);
         }
+
         .empty-state i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             display: block;
             margin-bottom: 1rem;
+            color: var(--border-color);
         }
+
+        .empty-state a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Modern Overlay Window Structures --- */
         .modal-overlay {
-            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
             padding: 1.5rem;
+            animation: fadeIn 0.2s ease-out;
         }
+
         .modal-overlay.active {
             display: flex !important;
         }
+
         .modal-content {
-            background: white;
-            border-radius: 28px;
+            background: #ffffff;
+            border-radius: 20px;
             max-width: 650px;
             width: 100%;
-            padding: 2.5rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
-            animation: modalSlideIn 0.3s ease;
+            position: relative;
         }
-        @keyframes modalSlideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
+
         .modal-header h2 {
             font-weight: 600;
-            font-size: 1.7rem;
-            color: #0b1a33;
+            font-size: 1.35rem;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .modal-header h2 i { color: #1e3a6b; }
+
+        .modal-header h2 i {
+            color: var(--accent-primary);
+        }
+
         .close-btn {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 300;
-            color: #4b5563;
+            color: var(--text-muted);
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.15s;
             background: none;
             border: none;
             line-height: 1;
+            padding: 4px 8px;
+            border-radius: 8px;
         }
+
         .close-btn:hover {
-            color: #111827;
+            color: var(--text-primary);
+            background: var(--bg-main);
             transform: rotate(90deg);
         }
+
         .form-group {
             margin-bottom: 1.2rem;
         }
+
         .form-group label {
             font-weight: 500;
-            font-size: 0.9rem;
-            color: #1f2a44;
+            font-size: 0.825rem;
+            color: var(--text-secondary);
             display: block;
             margin-bottom: 0.3rem;
         }
+
         .form-group label i {
             margin-right: 6px;
-            color: #1e3a6b;
+            color: var(--text-muted);
+            width: 16px;
+            text-align: center;
         }
+
         .form-group label .required {
             color: #ef4444;
             margin-left: 2px;
         }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.7rem 1rem;
-            border: 1px solid #d1d9e6;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            background: white;
-            transition: 0.2s;
+            padding: 0.6rem 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            transition: all var(--transition-speed);
             outline: none;
+            color: var(--text-primary);
         }
+
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #1e3a6b;
-            box-shadow: 0 0 0 4px rgba(30, 58, 107, 0.08);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
         .form-hint {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.75rem;
-            margin-top: 0.25rem;
+            margin-top: 0.35rem;
             display: block;
         }
+
         .section-divider {
             border: none;
-            border-top: 1px solid #eef2f6;
+            border-top: 1px solid var(--border-color);
             margin: 1.2rem 0;
         }
+
         .section-title {
-            color: #0b1a33;
-            font-size: 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 1rem;
         }
+
+        /* --- Plan Details --- */
         .plan-details {
-            background: #f8fafd;
+            background: #f9fafb;
             padding: 1rem 1.2rem;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
             margin: 0.5rem 0 0 0;
         }
+
         .plan-details h4 {
             margin: 0 0 0.5rem 0;
-            color: #0b1a33;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
         }
+
         .plan-details ul {
             margin: 0;
             padding-left: 1.2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 4px 8px;
         }
+
         .plan-details ul li {
             font-size: 0.85rem;
-            color: #4b5563;
+            color: var(--text-secondary);
             padding: 0.1rem 0;
         }
+
         .modal-actions {
             display: flex;
+            justify-content: flex-end;
             gap: 12px;
             margin-top: 2rem;
-            justify-content: flex-end;
         }
+
         .modal-actions .btn-secondary-action {
-            background: #eef2f6;
-            color: #1f2a44;
-            padding: 0.7rem 2rem;
-            border-radius: 60px;
-            font-weight: 500;
+            background: #f3f4f6;
+            color: var(--text-secondary);
             border: none;
-            font-size: 0.95rem;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: 0.15s;
+            transition: all var(--transition-speed);
         }
+
         .modal-actions .btn-secondary-action:hover {
-            background: #dce2ec;
+            background: #e5e7eb;
+            color: var(--text-primary);
         }
+
         .modal-actions .btn-primary {
-            padding: 0.7rem 2rem;
+            padding: 0.6rem 1.75rem;
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #eef2f6; border-radius: 20px; }
-        ::-webkit-scrollbar-thumb { background: #bac8d9; border-radius: 20px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9aadc4; }
-        @media (max-width: 650px) {
-            .app-bar { flex-direction: column; align-items: stretch; padding: 0.8rem 1.2rem; }
-            .app-bar > div { justify-content: flex-start; }
-            .viewport-container { padding: 0 1rem; margin: 1rem auto; }
-            .admin-controls { flex-direction: column; align-items: stretch; }
-            .admin-controls h2 { font-size: 1.2rem; }
-            .modal-content { padding: 1.5rem; margin: 0.5rem; }
-            .modal-header h2 { font-size: 1.3rem; }
-            .modal-actions { flex-direction: column; }
-            .modal-actions button { justify-content: center; }
-            .limit-warning { margin: 0.5rem 1rem; flex-direction: column; text-align: center; }
-            .limit-warning .btn-upgrade { margin-left: 0; }
+
+        /* --- Scrollbar Performance Modernization --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Stats Modal --- */
+        #statsModal .modal-content {
+            max-width: 500px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card {
+            background: #f9fafb;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stats-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .stats-card .value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 0.1rem;
+        }
+
+        .stats-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 0.8rem 0;
+        }
+
+        .stats-section-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            margin-top: 0.2rem;
+        }
+
+        /* --- Responsive Adaptive Controls --- */
+        @media (max-width: 768px) {
+            .app-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 1rem 1.5rem;
+            }
+            .viewport-container {
+                padding: 0 1rem;
+                margin: 1.5rem auto;
+            }
+            .limit-warning {
+                margin: 0 1rem 1.5rem 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            .limit-warning .btn-upgrade {
+                margin-left: 0;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+            th, td {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+            .admin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .admin-controls .stats {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+            .admin-controls .stats span {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.75rem;
+            }
+            .modal-actions {
+                flex-direction: column;
+            }
+            .modal-actions button {
+                justify-content: center;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .plan-details ul {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-bar h1 {
+                font-size: 1rem;
+            }
+            .app-bar h1 i {
+                font-size: 1.1rem;
+                padding: 6px;
+            }
+            .btn-secondary, .btn-danger {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .btn-primary {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+            }
+            .modal-header h2 {
+                font-size: 1.1rem;
+            }
+            .modal-content {
+                padding: 1.25rem;
+            }
+            th, td {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .plan-details ul {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <header class="app-bar">
-        <h1><i class="fas fa-robot"></i> Bot 管理控制台</h1>
+        <h1><i class="fas fa-robot"></i> Bot 管理</h1>
         <div>
             <a href="/admin/dashboard" class="btn-secondary"><i class="fas fa-chart-pie"></i> 仪表板</a>
             <a href="/admin/logout" class="btn-danger"><i class="fas fa-sign-out-alt"></i> 退出</a>
@@ -471,64 +802,70 @@
 
     <main class="viewport-container">
         <div class="admin-controls">
-            <h2><i class="fas fa-robot" style="color:#1e3a6b;"></i> 所有 Bot</h2>
+            <div class="stats">
+                <span><i class="fas fa-robot" style="color: var(--accent-primary);"></i> 总计: <%= typeof bots !== 'undefined' && bots ? bots.length : 0 %></span>
+                <span><i class="fas fa-check-circle" style="color: #10b981;"></i> 在线: <%= typeof bots !== 'undefined' && bots ? bots.filter(b => b.isActive && b.isOnline).length : 0 %></span>
+                <span><i class="fas fa-circle" style="color: #ef4444;"></i> 离线: <%= typeof bots !== 'undefined' && bots ? bots.filter(b => b.isActive && !b.isOnline).length : 0 %></span>
+            </div>
             <button onclick="showCreateForm()" class="btn-primary <%= (typeof currentAdmin !== 'undefined' && currentAdmin && !currentAdmin.isWithinLimits('bots') && !isSuperAdmin) ? 'disabled' : '' %>">
                 <i class="fas fa-plus-circle"></i> 添加 Bot
             </button>
         </div>
 
         <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Bot 名称</th>
-                        <th>Token</th>
-                        <th>方案</th>
-                        <th>状态</th>
-                        <th>使用量</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if(typeof bots !== 'undefined' && bots && bots.length > 0) { %>
-                        <% bots.forEach(function(bot) { %>
-                            <tr id="bot-<%= bot._id %>">
-                                <td><strong><i class="fas fa-robot" style="color:#1e3a6b;"></i> <%= bot.name %></strong></td>
-                                <td><code><%= bot.botToken ? bot.botToken.substring(0, 12) + '...' : 'N/A' %></code></td>
-                                <td>
-                                    <span class="badge-plan badge-<%= bot.plan %>">
-                                        <%= bot.plan ? bot.plan.toUpperCase() : 'DEMO' %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-indicator <%= bot.isActive && bot.isOnline ? 'active' : 'inactive' %>">
-                                        <%= bot.isActive ? (bot.isOnline ? '🟢 在线' : '🔴 离线') : '⛔ 已停用' %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span style="font-size:0.8rem;">
-                                        📨 <%= bot.currentMessages %>/<%= bot.maxMessages === Infinity ? '∞' : bot.maxMessages %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <button onclick="viewStats('<%= bot._id %>')" class="btn-stats">
-                                        <i class="fas fa-chart-bar"></i>
-                                    </button>
-                                    <button onclick="editBot('<%= bot._id %>')" class="btn-edit"><i class="fas fa-edit"></i></button>
-                                    <button onclick="deleteBot('<%= bot._id %>')" class="btn-delete"><i class="fas fa-trash-alt"></i></button>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bot 名称</th>
+                            <th>Token</th>
+                            <th>方案</th>
+                            <th>状态</th>
+                            <th>使用量</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(typeof bots !== 'undefined' && bots && bots.length > 0) { %>
+                            <% bots.forEach(function(bot) { %>
+                                <tr id="bot-<%= bot._id %>">
+                                    <td><strong><i class="fas fa-robot"></i> <%= bot.name %></strong></td>
+                                    <td><code><%= bot.botToken ? bot.botToken.substring(0, 12) + '...' : 'N/A' %></code></td>
+                                    <td>
+                                        <span class="badge-plan badge-<%= bot.plan %>">
+                                            <%= bot.plan ? bot.plan.toUpperCase() : 'DEMO' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-indicator <%= bot.isActive && bot.isOnline ? 'active' : 'inactive' %>">
+                                            <%= bot.isActive ? (bot.isOnline ? '🟢 在线' : '🔴 离线') : '⛔ 已停用' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span style="font-size:0.8rem;">
+                                            📨 <%= bot.currentMessages %>/<%= bot.maxMessages === Infinity ? '∞' : bot.maxMessages %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button onclick="viewStats('<%= bot._id %>')" class="btn-stats">
+                                            <i class="fas fa-chart-bar"></i> 统计
+                                        </button>
+                                        <button onclick="editBot('<%= bot._id %>')" class="btn-edit"><i class="fas fa-edit"></i> 编辑</button>
+                                        <button onclick="deleteBot('<%= bot._id %>')" class="btn-delete"><i class="fas fa-trash-alt"></i> 删除</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <i class="fas fa-robot"></i>
+                                    暂无 Bot，点击 <a href="#" onclick="showCreateForm(); return false;">添加 Bot</a> 创建第一个
                                 </td>
                             </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="6" class="empty-state">
-                                <i class="fas fa-robot"></i>
-                                暂无 Bot，点击 <a href="#" onclick="showCreateForm(); return false;" style="color: #2563eb;">添加 Bot</a> 创建第一个
-                            </td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -588,23 +925,23 @@
 
                 <hr class="section-divider">
 
-                <h4 class="section-title"><i class="fas fa-cog"></i> Telegram 配置</h4>
+                <div class="section-title"><i class="fas fa-cog"></i> Telegram 配置</div>
 
                 <div class="form-group">
                     <label><i class="fas fa-store"></i> 商家 Chat ID <span class="required">*</span></label>
-                    <input type="text" id="merchantChatId" name="merchantChatId" placeholder="例如: 8033870108 或 -1001234567890" required>
+                    <input type="text" id="merchantChatId" name="merchantChatId" placeholder="例如: 000000 或 -09111111001" required>
                     <span class="form-hint">商家接收转账凭证的群组或个人ID</span>
                 </div>
 
                 <div class="form-group">
                     <label><i class="fas fa-users"></i> 主群组 Chat ID <span class="required">*</span></label>
-                    <input type="text" id="mainGroupChatId" name="mainGroupChatId" placeholder="例如: -1009876543210" required>
+                    <input type="text" id="mainGroupChatId" name="mainGroupChatId" placeholder="例如: -09111111001" required>
                     <span class="form-hint">客户群组ID，客户发送消息的群组</span>
                 </div>
 
                 <div class="form-group">
                     <label><i class="fas fa-user-tie"></i> 所有者 ID</label>
-                    <input type="text" id="ownerId" name="ownerId" placeholder="例如: 8033870108">
+                    <input type="text" id="ownerId" name="ownerId" placeholder="例如: 000000">
                     <span class="form-hint">Bot 所有者的 Telegram ID（可选）</span>
                 </div>
 
@@ -849,91 +1186,91 @@
                     return res.json();
                 })
                 .then(function(stats) {
-                    document.getElementById('statsContent').innerHTML = 
-                        '<div style="padding: 0.5rem 0;">' +
-                            '<h4 style="margin-bottom: 0.8rem;">📊 使用情况</h4>' +
-                            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">📨 消息</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.usage.messages + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">👥 管理员</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.usage.admins + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">💳 支付方式</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.usage.paymentMethods + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">📢 群组</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.usage.groups + '</div>' +
-                                '</div>' +
+                    var html = '<div style="padding: 0.5rem 0;">' +
+                        '<div class="stats-section-title">📊 使用情况</div>' +
+                        '<div class="stats-grid">' +
+                            '<div class="stats-card">' +
+                                '<div class="label">📨 消息</div>' +
+                                '<div class="value">' + stats.usage.messages + '</div>' +
                             '</div>' +
-
-                            '<hr style="border:none; border-top:1px solid #eef2f6; margin:1rem 0;">' +
-
-                            '<h4 style="margin-bottom: 0.8rem;">📈 总统计</h4>' +
-                            '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem;">' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">处理消息</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.total.messagesProcessed + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">收到收据</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.total.receiptsReceived + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">交易数</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.total.transactions + '</div>' +
-                                '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">👥 管理员</div>' +
+                                '<div class="value">' + stats.usage.admins + '</div>' +
                             '</div>' +
-
-                            '<hr style="border:none; border-top:1px solid #eef2f6; margin:1rem 0;">' +
-
-                            '<h4 style="margin-bottom: 0.8rem;">🏷️ 状态</h4>' +
-                            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">方案</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + stats.plan.displayName + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">价格</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">$' + stats.plan.price + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">状态</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + (stats.isActive ? '✅ 已启用' : '❌ 已停用') + '</div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">在线</div>' +
-                                    '<div style="font-size:1.2rem; font-weight:600; color:#0b1a33;">' + (stats.isOnline ? '🟢 在线' : '🔴 离线') + '</div>' +
-                                '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">💳 支付方式</div>' +
+                                '<div class="value">' + stats.usage.paymentMethods + '</div>' +
                             '</div>' +
-
-                            '<hr style="border:none; border-top:1px solid #eef2f6; margin:1rem 0;">' +
-
-                            '<h4 style="margin-bottom: 0.8rem;">📌 Telegram 配置</h4>' +
-                            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">商家 Chat ID</div>' +
-                                    '<div style="font-size:0.9rem; font-weight:500; color:#0b1a33; margin-top:0.2rem;"><code>' + (stats.merchantChatId || '未设置') + '</code></div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">主群组 Chat ID</div>' +
-                                    '<div style="font-size:0.9rem; font-weight:500; color:#0b1a33; margin-top:0.2rem;"><code>' + (stats.mainGroupChatId || '未设置') + '</code></div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">所有者 ID</div>' +
-                                    '<div style="font-size:0.9rem; font-weight:500; color:#0b1a33; margin-top:0.2rem;"><code>' + (stats.ownerId || '未设置') + '</code></div>' +
-                                '</div>' +
-                                '<div style="background:#f8fafd; padding:0.8rem; border-radius:12px; border:1px solid #e2e8f0;">' +
-                                    '<div style="font-size:0.75rem; color:#64748b;">所有者用户名</div>' +
-                                    '<div style="font-size:0.9rem; font-weight:500; color:#0b1a33; margin-top:0.2rem;">' + (stats.ownerUsername || '未设置') + '</div>' +
-                                '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">📢 群组</div>' +
+                                '<div class="value">' + stats.usage.groups + '</div>' +
                             '</div>' +
-                        '</div>';
+                        '</div>' +
+
+                        '<hr class="stats-divider">' +
+
+                        '<div class="stats-section-title">📈 总统计</div>' +
+                        '<div class="stats-grid">' +
+                            '<div class="stats-card" style="text-align:center;">' +
+                                '<div class="label">处理消息</div>' +
+                                '<div class="value">' + stats.total.messagesProcessed + '</div>' +
+                            '</div>' +
+                            '<div class="stats-card" style="text-align:center;">' +
+                                '<div class="label">收到收据</div>' +
+                                '<div class="value">' + stats.total.receiptsReceived + '</div>' +
+                            '</div>' +
+                            '<div class="stats-card" style="text-align:center;">' +
+                                '<div class="label">交易数</div>' +
+                                '<div class="value">' + stats.total.transactions + '</div>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<hr class="stats-divider">' +
+
+                        '<div class="stats-section-title">🏷️ 状态</div>' +
+                        '<div class="stats-grid">' +
+                            '<div class="stats-card">' +
+                                '<div class="label">方案</div>' +
+                                '<div class="value" style="font-size:1rem;">' + stats.plan.displayName + '</div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">价格</div>' +
+                                '<div class="value">$' + stats.plan.price + '</div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">状态</div>' +
+                                '<div class="value" style="font-size:1rem;">' + (stats.isActive ? '✅ 已启用' : '❌ 已停用') + '</div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">在线</div>' +
+                                '<div class="value" style="font-size:1rem;">' + (stats.isOnline ? '🟢 在线' : '🔴 离线') + '</div>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<hr class="stats-divider">' +
+
+                        '<div class="stats-section-title">📌 Telegram 配置</div>' +
+                        '<div class="stats-grid">' +
+                            '<div class="stats-card">' +
+                                '<div class="label">商家 Chat ID</div>' +
+                                '<div style="font-size:0.85rem; font-weight:500; color:var(--text-primary); margin-top:0.2rem;"><code>' + (stats.merchantChatId || '未设置') + '</code></div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">主群组 Chat ID</div>' +
+                                '<div style="font-size:0.85rem; font-weight:500; color:var(--text-primary); margin-top:0.2rem;"><code>' + (stats.mainGroupChatId || '未设置') + '</code></div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">所有者 ID</div>' +
+                                '<div style="font-size:0.85rem; font-weight:500; color:var(--text-primary); margin-top:0.2rem;"><code>' + (stats.ownerId || '未设置') + '</code></div>' +
+                            '</div>' +
+                            '<div class="stats-card">' +
+                                '<div class="label">所有者用户名</div>' +
+                                '<div style="font-size:0.85rem; font-weight:500; color:var(--text-primary); margin-top:0.2rem;">' + (stats.ownerUsername || '未设置') + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
                     
+                    document.getElementById('statsContent').innerHTML = html;
                     document.getElementById('statsModal').style.display = 'flex';
                     document.getElementById('statsModal').classList.add('active');
                 })
