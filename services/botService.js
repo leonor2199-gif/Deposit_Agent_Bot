@@ -12,25 +12,25 @@ const initBot = async (botToken, botId) => {
   try {
     // Check if bot already exists
     if (botInstances.has(botId)) {
-      console.log(`ℹ️ Bot ${botId} already running`);
+      console.log(`ℹ️ 机器人 ${botId} 已在运行`);
       return botInstances.get(botId);
     }
 
     // Get bot data from database
     const botData = await Bot.findById(botId);
     if (!botData) {
-      console.error(`❌ Bot ${botId} not found in database`);
+      console.error(`❌ 数据库中未找到机器人 ${botId}`);
       return null;
     }
 
     if (!botData.isActive) {
-      console.log(`ℹ️ Bot ${botData.name} is inactive, skipping initialization`);
+      console.log(`ℹ️ 机器人 ${botData.name} 已停用，跳过初始化`);
       return null;
     }
 
     // Check if bot has required configuration
     if (!botData.merchantChatId || !botData.mainGroupChatId) {
-      console.error(`❌ Bot ${botData.name} missing merchantChatId or mainGroupChatId. Bot will not work.`);
+      console.error(`❌ 机器人 ${botData.name} 缺少商户聊天ID或主群组聊天ID。机器人无法工作。`);
       await Bot.findByIdAndUpdate(botId, { 
         isOnline: false,
         lastActive: new Date()
@@ -49,9 +49,9 @@ const initBot = async (botToken, botId) => {
       lastActive: new Date() 
     });
 
-    console.log(`✅ Bot ${botData.name} (${botId}) initialized successfully`);
-    console.log(`   📌 Merchant Chat ID: ${botData.merchantChatId}`);
-    console.log(`   📌 Main Group Chat ID: ${botData.mainGroupChatId}`);
+    console.log(`✅ 机器人 ${botData.name} (${botId}) 初始化成功`);
+    console.log(`   📌 商户聊天ID: ${botData.merchantChatId}`);
+    console.log(`   📌 主群组聊天ID: ${botData.mainGroupChatId}`);
 
     // Helper function to check admin limits
     const checkAdminLimits = async (botId, chatId) => {
@@ -63,11 +63,11 @@ const initBot = async (botToken, botId) => {
       if (!await admin.canSendMessage()) {
         return {
           allowed: false,
-          message: `⚠️ <b>Daily message limit reached!</b>\n\n` +
-                   `You have used ${admin.currentMessagesToday} out of ${admin.maxMessagesPerDay === Infinity ? '∞' : admin.maxMessagesPerDay} messages today.\n\n` +
-                   `💎 <b>Upgrade your plan</b> for unlimited messages.\n` +
-                   `Current Plan: ${admin.plan.toUpperCase()}\n\n` +
-                   `Contact: ${process.env.CONTACT_URL || 'support@your-site.com'}`
+          message: `⚠️ <b>已达每日消息发送上限！</b>\n\n` +
+                   `您今天已使用 ${admin.currentMessagesToday} 条消息，上限为 ${admin.maxMessagesPerDay === Infinity ? '∞' : admin.maxMessagesPerDay} 条。\n\n` +
+                   `💎 <b>升级您的套餐</b>以获取无限消息发送权限。\n` +
+                   `当前套餐：${admin.plan.toUpperCase()}\n\n` +
+                   `请联系：${process.env.CONTACT_URL || 'support@your-site.com'}`
         };
       }
       
@@ -83,15 +83,14 @@ const initBot = async (botToken, botId) => {
       // Get fresh bot data
       const currentBot = await Bot.findById(botId);
       if (!currentBot || !currentBot.isActive) {
-        await safeSendMessage(bot, chatId, '❌ This bot is no longer active.');
+        await safeSendMessage(bot, chatId, '❌ 此机器人已停用。');
         return;
       }
 
       // Check if bot has required configuration
       if (!currentBot.merchantChatId || !currentBot.mainGroupChatId) {
         await safeSendMessage(bot, chatId, 
-          '❌ Bot is not properly configured. Please contact administrator.\n' +
-          '机器人未正确配置，请联系管理员。'
+          '❌ 机器人配置不完整，请联系管理员。'
         );
         return;
       }
@@ -105,7 +104,7 @@ const initBot = async (botToken, botId) => {
       const isMainGroup = (chatIdStr === mainGroupChatIdStr);
       
       if (!isMerchantChat && !isMainGroup) {
-        console.log(`ℹ️ Unauthorized chat ${chatIdStr} tried to use bot ${currentBot.name}`);
+        console.log(`ℹ️ 未授权的聊天 ${chatIdStr} 尝试使用机器人 ${currentBot.name}`);
         return;
       }
 
@@ -120,11 +119,11 @@ const initBot = async (botToken, botId) => {
       if (isMainGroup) {
         if (!currentBot.isWithinLimits('messages')) {
           await safeSendMessage(bot, chatId, 
-            `⚠️ <b>Message limit reached!</b>\n\n` +
-            `You have used ${currentBot.currentMessages} out of ${currentBot.maxMessages === Infinity ? '∞' : currentBot.maxMessages} messages.\n\n` +
-            `💎 <b>Upgrade your plan</b> to continue using this bot.\n` +
-            `Current Plan: ${currentBot.plan.toUpperCase()}\n\n` +
-            `Contact: ${process.env.CONTACT_URL || 'support@your-site.com'}`
+            `⚠️ <b>已达消息发送上限！</b>\n\n` +
+            `您已使用 ${currentBot.currentMessages} 条消息，上限为 ${currentBot.maxMessages === Infinity ? '∞' : currentBot.maxMessages} 条。\n\n` +
+            `💎 <b>升级您的套餐</b>以继续使用此机器人。\n` +
+            `当前套餐：${currentBot.plan.toUpperCase()}\n\n` +
+            `请联系：${process.env.CONTACT_URL || 'support@your-site.com'}`
           );
           return;
         }
@@ -137,25 +136,24 @@ const initBot = async (botToken, botId) => {
       // START command - Show main menu with buttons
       if (text === '/start') {
         if (!isMainGroup && !isMerchantChat) return;
-        return sendMainMenu(bot, chatId, "👋 Welcome to the Payment Pipeline!");
+        return sendMainMenu(bot, chatId, "👋 欢迎使用支付管道系统！");
       }
 
       // HELP command
-      if (text === 'ℹ️ Help / How to Pay' || text === '/help') {
+      if (text === 'ℹ️ 帮助 / 如何支付' || text === '/help') {
         if (!isMainGroup && !isMerchantChat) return;
-        const helpMsg = `💡 <b>How to make a secure deposit:</b>\n\n` +
-                        `1️⃣ Click <b>🏛️ Choose Payment Method</b>.\n` +
-                        `2️⃣ Choose your bank.\n` +
-                        `3️⃣ <b>IMPORTANT:</b> Complete the transfer, then <b>Reply directly</b> to that bank details message with your receipt photo!`;
+        const helpMsg = `💡 <b>如何进行安全存款：</b>\n\n` +
+                        `1️⃣ 点击 <b>🏛️ 选择支付方式</b>。\n` +
+                        `2️⃣ 选择您的银行。\n` +
+                        `3️⃣ <b>重要提示：</b>完成转账后，请<b>直接回复</b>该银行信息消息并附上您的收据照片！`;
         return safeSendMessage(bot, chatId, helpMsg);
       }
 
       // CHOOSE PAYMENT METHOD button
-      if (text === '🏛️ Choose Payment Method') {
+      if (text === '🏛️ 选择支付方式') {
         if (!isMainGroup) {
           await safeSendMessage(bot, chatId, 
-            '❌ Payment methods are only available in the authorized group.\n' +
-            '支付方式仅在授权的群组中可用。'
+            '❌ 支付方式仅在授权的群组中可用。'
           );
           return;
         }
@@ -173,16 +171,16 @@ const initBot = async (botToken, botId) => {
             const userId = msg.from.id;
             const userChatId = msg.chat.id;
             const fileId = msg.photo[msg.photo.length - 1].file_id;
-            const parsedBankContext = originalBotMsg.text.split('\n')[0] || "Active Transfer System";
+            const parsedBankContext = originalBotMsg.text.split('\n')[0] || "活跃转账系统";
 
             if (isMainGroup) {
-              const merchantCaption = `🚨 <b>New Deposit Slip Received!</b>\n\n` +
-                                      `👤 <b>Sender Account:</b> ${userHandle} (ID: <code>${userId}</code>)\n` +
-                                      `💵 <b>Payment Context:</b> ${parsedBankContext}\n` +
-                                      `📅 <b>Timestamp:</b> ${new Date().toLocaleString()}\n\n` +
-                                      `📌 <b>Customer Group ID:</b> <code>${userChatId}</code>\n` +
-                                      `📌 <b>Customer Message ID:</b> <code>${msg.message_id}</code>\n` +
-                                      `🤖 <b>Bot:</b> ${currentBot.name}`;
+              const merchantCaption = `🚨 <b>收到新的存款凭证！</b>\n\n` +
+                                      `👤 <b>发送账户：</b> ${userHandle} (ID: <code>${userId}</code>)\n` +
+                                      `💵 <b>支付详情：</b> ${parsedBankContext}\n` +
+                                      `📅 <b>时间戳：</b> ${new Date().toLocaleString()}\n\n` +
+                                      `📌 <b>客户群组ID：</b> <code>${userChatId}</code>\n` +
+                                      `📌 <b>客户消息ID：</b> <code>${msg.message_id}</code>\n` +
+                                      `🤖 <b>机器人：</b> ${currentBot.name}`;
 
               try {
                 await bot.sendPhoto(currentBot.merchantChatId, fileId, {
@@ -191,29 +189,28 @@ const initBot = async (botToken, botId) => {
                   reply_markup: {
                     inline_keyboard: [
                       [
-                        { text: "Confirmed ✅", callback_data: `mchk_approve_${userChatId}_${msg.message_id}` },
-                        { text: "Reject ❌", callback_data: `mchk_reject_${userChatId}_${msg.message_id}` }
+                        { text: "确认 ✅", callback_data: `mchk_approve_${userChatId}_${msg.message_id}` },
+                        { text: "拒绝 ❌", callback_data: `mchk_reject_${userChatId}_${msg.message_id}` }
                       ],
                       [
-                        { text: "💬 Custom Message", callback_data: `mchk_custom_${userChatId}_${msg.message_id}` }
+                        { text: "💬 自定义消息", callback_data: `mchk_custom_${userChatId}_${msg.message_id}` }
                       ]
                     ]
                   }
                 });
 
-                const confirmationMsg = await safeSendMessage(bot, chatId, `✅ Thank you ${userHandle}, your receipt has been sent to the merchant team! Please wait for confirmation.`);
+                const confirmationMsg = await safeSendMessage(bot, chatId, `✅ 感谢您 ${userHandle}，您的收据已发送给商户团队！请等待确认。`);
                 if (confirmationMsg) {
                   scheduleDeletion(bot, chatId, confirmationMsg.message_id, 60000);
                 }
                 
                 await currentBot.incrementUsage('receipts');
               } catch (error) {
-                console.error("❌ Receipt forwarding failed:", error.message);
+                console.error("❌ 转发收据失败：", error.message);
               }
             } else {
               await safeSendMessage(bot, chatId, 
-                '❌ Please use this bot in the authorized group only.\n' +
-                '请仅在授权的群组中使用此机器人。'
+                '❌ 请在授权的群组中使用此机器人。'
               );
             }
           }
@@ -225,7 +222,7 @@ const initBot = async (botToken, botId) => {
       if (msg.reply_to_message && isMerchantChat) {
         const promptMsg = msg.reply_to_message;
         
-        if (promptMsg.text && promptMsg.text.includes('✍️ CUSTOM MESSAGE INPUT:')) {
+        if (promptMsg.text && promptMsg.text.includes('✍️ 自定义消息输入：')) {
           try {
             const matchData = promptMsg.text.match(/\[CID:(.*?)\]\[MID:(.*?)\]/);
             if (!matchData) return;
@@ -233,12 +230,12 @@ const initBot = async (botToken, botId) => {
             const customerChatId = matchData[1];
             const customerMsgId = matchData[2];
 
-            const userMention = `<a href="tg://user?id=${customerChatId}">Customer</a>`;
-            const relayedMerchantText = `💬 <b>Merchant Update:</b>\n\n📌 ${userMention}, ${text}\n\n_This message is from the merchant, please do not reply._`;
+            const userMention = `<a href="tg://user?id=${customerChatId}">客户</a>`;
+            const relayedMerchantText = `💬 <b>商户更新：</b>\n\n📌 ${userMention}，${text}\n\n_此消息来自商户，请勿回复。_`;
 
             await sendMerchantMessageToCustomer(bot, customerChatId, customerMsgId, relayedMerchantText, true);
 
-            const successReceipt = await safeSendMessage(bot, currentBot.merchantChatId, `✅ Custom notification routed and delivered successfully!`);
+            const successReceipt = await safeSendMessage(bot, currentBot.merchantChatId, `✅ 自定义通知已成功发送！`);
             if (successReceipt) {
               scheduleDeletion(bot, currentBot.merchantChatId, successReceipt.message_id, 5000);
             }
@@ -247,14 +244,14 @@ const initBot = async (botToken, botId) => {
             bot.deleteMessage(currentBot.merchantChatId, msg.message_id).catch(() => {});
 
           } catch (err) {
-            console.error("❌ Failed to forward custom merchant text:", err.message);
+            console.error("❌ 转发商户自定义文本失败：", err.message);
           }
           return;
         }
 
-        if (promptMsg.text && promptMsg.text.includes('Merchant Update:')) {
+        if (promptMsg.text && promptMsg.text.includes('商户更新：')) {
           const warningMsg = await safeSendMessage(bot, currentBot.merchantChatId, 
-            '⚠️ This is a system message sent to the customer. Please do not reply. Use the "💬 Custom Message" button to contact the customer.'
+            '⚠️ 这是发送给客户的系统消息。请勿回复。请使用 "💬 自定义消息" 按钮联系客户。'
           );
           if (warningMsg) {
             scheduleDeletion(bot, currentBot.merchantChatId, warningMsg.message_id, 10000);
@@ -266,11 +263,11 @@ const initBot = async (botToken, botId) => {
       // Prevent customer reply loops
       if (msg.reply_to_message && isMainGroup) {
         const repliedText = msg.reply_to_message.text;
-        if (repliedText && (repliedText.includes('Merchant Update:') || 
-            repliedText.includes('Payment Received Successfully') || 
-            repliedText.includes('Deposit Slip Rejected'))) {
+        if (repliedText && (repliedText.includes('商户更新：') || 
+            repliedText.includes('支付成功接收') || 
+            repliedText.includes('存款凭证已被拒绝'))) {
           const warningMsg = await safeSendMessage(bot, chatId, 
-            'ℹ️ This is a system message from the merchant. Please do not reply. Use "🏛️ Choose Payment Method" for help.'
+            'ℹ️ 这是来自商户的系统消息。请勿回复。如需帮助，请使用 "🏛️ 选择支付方式"。'
           );
           if (warningMsg) {
             scheduleDeletion(bot, chatId, warningMsg.message_id, 30000);
@@ -289,7 +286,7 @@ const initBot = async (botToken, botId) => {
       const currentBot = await Bot.findById(botId);
       if (!currentBot || !currentBot.isActive) {
         await bot.answerCallbackQuery(callbackQuery.id, { 
-          text: "Bot is no longer active.", 
+          text: "机器人已停用。", 
           show_alert: true 
         });
         return;
@@ -297,7 +294,7 @@ const initBot = async (botToken, botId) => {
 
       if (!currentBot.merchantChatId || !currentBot.mainGroupChatId) {
         await bot.answerCallbackQuery(callbackQuery.id, { 
-          text: "Bot is not properly configured.", 
+          text: "机器人配置不完整。", 
           show_alert: true 
         });
         return;
@@ -312,7 +309,7 @@ const initBot = async (botToken, botId) => {
 
       if (!isMerchantChat && !isMainGroup) {
         await bot.answerCallbackQuery(callbackQuery.id, { 
-          text: "Unauthorized chat.", 
+          text: "未授权的聊天。", 
           show_alert: true 
         });
         return;
@@ -321,7 +318,7 @@ const initBot = async (botToken, botId) => {
       const adminCheck = await checkAdminLimits(botId, chatId);
       if (!adminCheck.allowed) {
         await bot.answerCallbackQuery(callbackQuery.id, { 
-          text: "Daily limit reached! Please upgrade.", 
+          text: "已达每日上限！请升级套餐。", 
           show_alert: true 
         });
         return;
@@ -331,7 +328,7 @@ const initBot = async (botToken, botId) => {
       if (action.startsWith('mchk_')) {
         if (!isMerchantChat) {
           await bot.answerCallbackQuery(callbackQuery.id, { 
-            text: "This action is only available for merchants.", 
+            text: "此操作仅对商户可用。", 
             show_alert: true 
           });
           return;
@@ -342,25 +339,25 @@ const initBot = async (botToken, botId) => {
         const customerChatId = parts[2];
         const customerMsgId = parts[3];
 
-        const userMention = `<a href="tg://user?id=${customerChatId}">Customer</a>`;
+        const userMention = `<a href="tg://user?id=${customerChatId}">客户</a>`;
         
         let alertText = "";
         let publicUpdateMessage = "";
 
         if (status === 'approve') {
-          alertText = "Payment Approved!";
-          publicUpdateMessage = `✅ <b>Payment Received Successfully!</b>\n\n📌 ${userMention}, your transaction has been audited and approved. Thank you!\n\n_This message is confirmed by the merchant, please do not reply._`;
+          alertText = "支付已确认！";
+          publicUpdateMessage = `✅ <b>支付成功接收！</b>\n\n📌 ${userMention}，您的交易已审核并确认。感谢您！\n\n_此消息由商户确认，请勿回复。_`;
           await currentBot.incrementUsage('transactions');
         } else if (status === 'reject') {
-          alertText = "Payment Rejected!";
-          publicUpdateMessage = `❌ <b>Deposit Slip Rejected!</b>\n\n📌 ${userMention}, the merchant team could not confirm this receipt. Please check your transaction details and resubmit.\n\n_This message has been processed by the merchant, please do not reply._`;
+          alertText = "支付已拒绝！";
+          publicUpdateMessage = `❌ <b>存款凭证已被拒绝！</b>\n\n📌 ${userMention}，商户团队无法确认此收据。请检查您的交易详情并重新提交。\n\n_此消息已由商户处理，请勿回复。_`;
         } else if (status === 'custom') {
           bot.answerCallbackQuery(callbackQuery.id);
           
           await safeSendMessage(bot, currentBot.merchantChatId, 
-            `✍️ <b>CUSTOM MESSAGE INPUT:</b>\nType your message below and press send. The bot will automatically deliver it to the user.\n\n` +
-            `⚠️ Do not remove this system tracking tag:\n<code>[CID:${customerChatId}][MID:${customerMsgId}]</code>\n\n` +
-            `💡 Tip: The message will appear as "Merchant Update" and the customer cannot reply directly.`
+            `✍️ <b>自定义消息输入：</b>\n请在下方输入您的消息并发送。机器人将自动将其发送给用户。\n\n` +
+            `⚠️ 请勿删除此系统跟踪标签：\n<code>[CID:${customerChatId}][MID:${customerMsgId}]</code>\n\n` +
+            `💡 提示：消息将显示为"商户更新"，客户无法直接回复。`
           );
           return;
         }
@@ -370,14 +367,14 @@ const initBot = async (botToken, botId) => {
         try {
           await bot.answerCallbackQuery(callbackQuery.id, { text: alertText });
 
-          const cleanCaption = msg.caption ? msg.caption.split('\n\n')[0] : "Transaction Processed";
-          await bot.editMessageCaption(`${cleanCaption}\n\n⚡️ <b>STATUS LOGGED:</b> ${alertText}\n\n_This receipt has been processed, no further replies accepted._`, {
+          const cleanCaption = msg.caption ? msg.caption.split('\n\n')[0] : "交易已处理";
+          await bot.editMessageCaption(`${cleanCaption}\n\n⚡️ <b>状态已记录：</b> ${alertText}\n\n_此收据已处理，不接受进一步回复。_`, {
             chat_id: currentBot.merchantChatId,
             message_id: msg.message_id,
             reply_markup: { inline_keyboard: [] }
           });
         } catch (uiError) {
-          console.error("❌ Merchant UI rendering exception:", uiError.message);
+          console.error("❌ 商户界面渲染异常：", uiError.message);
         }
         return;
       }
@@ -386,7 +383,7 @@ const initBot = async (botToken, botId) => {
       if (action.startsWith('method_')) {
         if (!isMainGroup) {
           await bot.answerCallbackQuery(callbackQuery.id, { 
-            text: "Payment methods are only available in the authorized group.", 
+            text: "支付方式仅在授权的群组中可用。", 
             show_alert: true 
           });
           return;
@@ -398,7 +395,7 @@ const initBot = async (botToken, botId) => {
           
           if (!method || !method.isActive) {
             await bot.answerCallbackQuery(callbackQuery.id, { 
-              text: "Profile out of service.", 
+              text: "该支付方式已停用。", 
               show_alert: true 
             });
             return;
@@ -406,7 +403,7 @@ const initBot = async (botToken, botId) => {
           
           if (method.botId && String(method.botId) !== String(botId)) {
             await bot.answerCallbackQuery(callbackQuery.id, { 
-              text: "This payment method is not available for this bot.", 
+              text: "此支付方式不适用于此机器人。", 
               show_alert: true 
             });
             return;
@@ -415,14 +412,14 @@ const initBot = async (botToken, botId) => {
           await bot.answerCallbackQuery(callbackQuery.id);
           try { await bot.deleteMessage(chatId, msg.message_id); } catch (e) {}
 
-          let targetPayload = `🏛️ <b>${method.name} Transfer Data</b>\n` +
-                              `👉 <b>REPLY TO THIS MESSAGE WITH RECEIPT PHOTO</b>\n` +
-                              `⏳ <i>This record auto-destructs in 15 minutes.</i>\n\n` +
-                              `• <b>Institution:</b> ${method.bankName}\n` +
-                              `• <b>Account Holder:</b> <code>${method.accountName}</code>\n` +
-                              `• <b>Account/Card Value:</b> <code>${method.accountNumber}</code>\n`;
-          if (method.clabe) targetPayload += `• <b>CLABE Code:</b> <code>${method.clabe}</code>\n`;
-          targetPayload += `\n📝 <b>Instructions:</b>\n${method.instructions}`;
+          let targetPayload = `🏛️ <b>${method.name} 转账信息</b>\n` +
+                              `👉 <b>请回复此消息并附上收据照片</b>\n` +
+                              `⏳ <i>此记录将在15分钟后自动删除。</i>\n\n` +
+                              `• <b>机构：</b> ${method.bankName}\n` +
+                              `• <b>账户持有人：</b> <code>${method.accountName}</code>\n` +
+                              `• <b>账号/卡号：</b> <code>${method.accountNumber}</code>\n`;
+          if (method.clabe) targetPayload += `• <b>CLABE代码：</b> <code>${method.clabe}</code>\n`;
+          targetPayload += `\n📝 <b>操作说明：</b>\n${method.instructions}`;
 
           let dispatchedPackage;
           const targetAnchorId = msg.reply_to_message ? msg.reply_to_message.message_id : msg.message_id;
@@ -438,7 +435,7 @@ const initBot = async (botToken, botId) => {
                 reply_to_message_id: targetAnchorId 
               });
             } catch (photoError) {
-              console.log('❌ QR Code send failed, sending text only:', photoError.message);
+              console.log('❌ 发送二维码失败，仅发送文本：', photoError.message);
               dispatchedPackage = await safeSendMessage(bot, chatId, targetPayload);
             }
           } else {
@@ -449,10 +446,10 @@ const initBot = async (botToken, botId) => {
             scheduleDeletion(bot, chatId, dispatchedPackage.message_id);
           }
         } catch (err) {
-          console.error('❌ Callback exception:', err.message);
+          console.error('❌ 回调异常：', err.message);
           try {
             await bot.answerCallbackQuery(callbackQuery.id, { 
-              text: "Error loading payment method. Please try again.", 
+              text: "加载支付方式出错。请重试。", 
               show_alert: true 
             });
           } catch (e) {}
@@ -462,7 +459,7 @@ const initBot = async (botToken, botId) => {
 
     return bot;
   } catch (err) {
-    console.error(`❌ Failed to initialize bot ${botId}:`, err.message);
+    console.error(`❌ 初始化机器人 ${botId} 失败：`, err.message);
     await Bot.findByIdAndUpdate(botId, { isOnline: false });
     return null;
   }
@@ -471,13 +468,13 @@ const initBot = async (botToken, botId) => {
 // Helper: Safe send message with empty check
 const safeSendMessage = async (bot, chatId, text, options = {}) => {
   if (!text || text.trim() === '') {
-    console.log('⚠️ Attempted to send empty message, skipping');
+    console.log('⚠️ 尝试发送空消息，已跳过');
     return null;
   }
   try {
     return await bot.sendMessage(chatId, text, { parse_mode: 'HTML', ...options });
   } catch (err) {
-    console.error('❌ Failed to send message:', err.message);
+    console.error('❌ 发送消息失败：', err.message);
     return null;
   }
 };
@@ -487,7 +484,7 @@ const safeSendPhoto = async (bot, chatId, photo, options = {}) => {
   try {
     return await bot.sendPhoto(chatId, photo, options);
   } catch (err) {
-    console.error('❌ Failed to send photo:', err.message);
+    console.error('❌ 发送照片失败：', err.message);
     return null;
   }
 };
@@ -500,12 +497,12 @@ const stopBot = async (botId) => {
       await bot.stopPolling();
       botInstances.delete(botId);
       await Bot.findByIdAndUpdate(botId, { isOnline: false });
-      console.log(`✅ Bot ${botId} stopped successfully`);
+      console.log(`✅ 机器人 ${botId} 已成功停止`);
       return true;
     }
     return false;
   } catch (err) {
-    console.error(`❌ Failed to stop bot ${botId}:`, err.message);
+    console.error(`❌ 停止机器人 ${botId} 失败：`, err.message);
     return false;
   }
 };
@@ -514,13 +511,13 @@ const stopBot = async (botId) => {
 const initAllBots = async () => {
   try {
     const bots = await Bot.find({ isActive: true });
-    console.log(`📋 Found ${bots.length} active bots to initialize`);
+    console.log(`📋 找到 ${bots.length} 个活跃机器人待初始化`);
     
     for (const bot of bots) {
       await initBot(bot.botToken, bot._id);
     }
   } catch (err) {
-    console.error('Failed to initialize bots:', err);
+    console.error('初始化机器人失败：', err);
   }
 };
 
@@ -536,11 +533,11 @@ const scheduleDeletion = (bot, chatId, messageId, delayMs = 15 * 60 * 1000) => {
 };
 
 // MAIN MENU - Shows interactive buttons
-const sendMainMenu = async (bot, chatId, text = "Use the interactive menu below:") => {
+const sendMainMenu = async (bot, chatId, text = "请使用以下交互菜单：") => {
   const keyboard = {
     keyboard: [
-      [{ text: "🏛️ Choose Payment Method" }],
-      [{ text: "ℹ️ Help / How to Pay" }]
+      [{ text: "🏛️ 选择支付方式" }],
+      [{ text: "ℹ️ 帮助 / 如何支付" }]
     ],
     resize_keyboard: true,
     one_time_keyboard: false
@@ -551,7 +548,7 @@ const sendMainMenu = async (bot, chatId, text = "Use the interactive menu below:
       reply_markup: keyboard
     });
   } catch (err) {
-    console.error("❌ Main menu error:", err.message);
+    console.error("❌ 主菜单错误：", err.message);
   }
 };
 
@@ -564,7 +561,7 @@ const sendBankSelection = async (bot, chatId, originalMessageId, botId) => {
     });
     
     if (methods.length === 0) {
-      return safeSendMessage(bot, chatId, "❌ No active payment methods available for this bot.");
+      return safeSendMessage(bot, chatId, "❌ 此机器人暂无可用支付方式。");
     }
 
     const inlineKeyboard = methods.map(method => [{
@@ -572,17 +569,15 @@ const sendBankSelection = async (bot, chatId, originalMessageId, botId) => {
       callback_data: `method_${method._id}`
     }]);
 
-    await bot.sendMessage(chatId, "Select a banking institution below:", {
+    await bot.sendMessage(chatId, "请选择以下银行机构：", {
       reply_to_message_id: originalMessageId,
       reply_markup: { inline_keyboard: inlineKeyboard }
     });
   } catch (err) {
-    console.error("❌ Error fetching banks:", err.message);
-    await safeSendMessage(bot, chatId, "❌ Error loading payment methods. Please try again.");
+    console.error("❌ 获取银行列表失败：", err.message);
+    await safeSendMessage(bot, chatId, "❌ 加载支付方式失败。请重试。");
   }
 };
-
-
 
 // MERCHANT MESSAGE TO CUSTOMER
 const sendMerchantMessageToCustomer = async (bot, customerChatId, customerMsgId, message, isFinal = true) => {
@@ -595,8 +590,8 @@ const sendMerchantMessageToCustomer = async (bot, customerChatId, customerMsgId,
     if (isFinal) {
       options.reply_markup = {
         keyboard: [
-          [{ text: "🏛️ Choose Payment Method" }],
-          [{ text: "ℹ️ Help / How to Pay" }]
+          [{ text: "🏛️ 选择支付方式" }],
+          [{ text: "ℹ️ 帮助 / 如何支付" }]
         ],
         resize_keyboard: true,
         one_time_keyboard: false
@@ -606,10 +601,9 @@ const sendMerchantMessageToCustomer = async (bot, customerChatId, customerMsgId,
     const sentMsg = await bot.sendMessage(customerChatId, message, options);
     return sentMsg;
   } catch (err) {
-    console.error('Send merchant message failed:', err.message);
+    console.error('发送商户消息失败：', err.message);
     return null;
   }
 };
-
 
 module.exports = { initBot, stopBot, initAllBots, botInstances };
