@@ -13,7 +13,11 @@ const app = express();
 
 // Connect Database
 connectDB();
-await createSuperAdmin();
+
+// Wrap the async call in an IIFE to avoid top-level await
+(async () => {
+  await createSuperAdmin();
+})();
 
 // Global Request parsing engines
 app.use(express.json());
