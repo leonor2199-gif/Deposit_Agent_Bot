@@ -7,11 +7,13 @@ const mongoose = require('mongoose');
 const os = require('os');
 const connectDB = require('./config/db');
 const { initAllBots } = require('./services/botService');
+const createSuperAdmin = require("./utils/createSuperAdmin");
 
 const app = express();
 
 // Connect Database
 connectDB();
+await createSuperAdmin();
 
 // Global Request parsing engines
 app.use(express.json());
